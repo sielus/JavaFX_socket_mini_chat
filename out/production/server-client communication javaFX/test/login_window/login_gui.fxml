@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="login_window.LoginGUI"
+            prefHeight="400.0" prefWidth="600.0">
+    <TextField id="userName" fx:id="text_input_user_name"  text="test" layoutX="226.0" layoutY="85.0" promptText="User name" />
+    <TextField id="serverIP" fx:id="text_input_server_ip" text="127.0.0.1" layoutX="228.0" layoutY="146.0" promptText="Server ip" />
+    <Button layoutX="276.0" layoutY="250.0" mnemonicParsing="false"  onAction="#logIntoServer" text="Button" />
+    <TextField id="serverPORT" fx:id="text_input_server_port" text="4444" layoutX="228.0" layoutY="200.0" promptText="Server Port" />
+
+</AnchorPane>
