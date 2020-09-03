@@ -31,6 +31,7 @@ public class ClientServer {
             message += "\\e";
             byte[] data = message.getBytes();
             DatagramPacket datagramPacket = new DatagramPacket(data,data.length,address,port);
+
             socket.send(datagramPacket);
          //   System.out.println(message + " ip : " + datagramPacket.getAddress() + " port " + datagramPacket.getPort());
 
@@ -52,7 +53,6 @@ public class ClientServer {
                         if(!isCommand(messageFromClient,datagramPacket)){
                             //Print message
                             clientGUI.printMessage(messageFromClient);
-                            System.out.println("xxx");
                         }
                     }
                 }catch (Exception e){
