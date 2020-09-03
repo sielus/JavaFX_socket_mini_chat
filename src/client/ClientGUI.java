@@ -12,6 +12,7 @@ public class ClientGUI extends Application {
     private static ClientServer clientServer;
     static public TextArea chatTextarea;
     public TextField newMessage;
+    private static String name;
 
 
     public static void main(String[] args) {
@@ -26,6 +27,7 @@ public class ClientGUI extends Application {
 
     public static void createClient(String userName, String ipAdress, int port, Stage stage){
         parent = stage.getScene().getRoot();
+        name = userName;
         clientServer = new ClientServer(userName,ipAdress,port);
     }
 
@@ -43,6 +45,6 @@ public class ClientGUI extends Application {
     public void sendMessageButton(ActionEvent actionEvent) {
         TextField textField = (TextField) parent.lookup("#newMessage");
         String newMessage = textField.getText();
-        clientServer.send(newMessage + " \\endLine");
+        clientServer.send(name + " : " + newMessage + " \\endLine");
     }
 }
