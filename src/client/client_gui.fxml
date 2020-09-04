@@ -5,11 +5,10 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.ClientGUI">
+<AnchorPane prefHeight="150.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.ClientGUI">
    <children>
-      <TextArea fx:id="chatTextarea" layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="560.0" />
-      <TextField fx:id="newMessage" layoutX="14.0" layoutY="245.0" />
-      <Button layoutX="201.0" layoutY="246.0" mnemonicParsing="false" onAction="#sendMessageButton" text="Button" />
+      <TextArea fx:id="chatTextarea" editable="false" layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="560.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+      <TextField fx:id="newMessage" layoutX="10.0" layoutY="221.0" prefHeight="25.0" prefWidth="490.0" promptText="Wiadomość..." AnchorPane.bottomAnchor="16.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="221.0" />
+      <Button layoutX="510.0" layoutY="221.0" mnemonicParsing="false" onAction="#sendMessageButton" prefHeight="25.0" prefWidth="76.0" text="Wyślij" AnchorPane.bottomAnchor="16.0" AnchorPane.leftAnchor="510.0" AnchorPane.rightAnchor="14.0" />
    </children>
 </AnchorPane>

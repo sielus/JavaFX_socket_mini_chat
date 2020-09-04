@@ -70,6 +70,7 @@ public class Server {
 Commands :
 \con -> new user connected
 \stopServer -> stopping server
+\isAvailable-> check if server is available
  */
     private static boolean isCommand(String message, DatagramPacket datagramPacket) {
         if(message.startsWith("\\con:")){
@@ -80,6 +81,8 @@ Commands :
         }
         else if(message.startsWith("\\stopServer")){
             running = false;
+        } else if(message.startsWith("\\isAvailable")){
+            send("true",datagramPacket.getAddress(),datagramPacket.getPort());
         }
         return false;
     }
