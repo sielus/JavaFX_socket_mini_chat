@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="150.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.ClientGUI">
+<AnchorPane prefHeight="258.0" prefWidth="742.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.ClientGUI">
    <children>
-      <TextArea fx:id="chatTextarea" editable="false" layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="560.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
-      <TextField fx:id="newMessage" layoutX="10.0" layoutY="221.0" prefHeight="25.0" prefWidth="490.0" promptText="Wiadomość..." AnchorPane.bottomAnchor="16.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="221.0" />
-      <Button layoutX="510.0" layoutY="221.0" mnemonicParsing="false" onAction="#sendMessageButton" prefHeight="25.0" prefWidth="76.0" text="Wyślij" AnchorPane.bottomAnchor="16.0" AnchorPane.leftAnchor="510.0" AnchorPane.rightAnchor="14.0" />
+      <TextArea fx:id="chatTextarea" editable="false" layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="560.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+      <TextField fx:id="newMessage" layoutX="10.0" layoutY="221.0" prefHeight="25.0" prefWidth="468.0" promptText="Wiadomość..." AnchorPane.bottomAnchor="16.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="221.0" />
+      <Button layoutX="510.0" layoutY="221.0" mnemonicParsing="false" onAction="#sendMessageButton" prefHeight="25.0" prefWidth="76.0" text="Wyślij" AnchorPane.bottomAnchor="16.0" AnchorPane.rightAnchor="14.0" />
+      <ListView fx:id="group_chat_list_users" layoutX="20.0" layoutY="10.0" prefHeight="237.0" prefWidth="153.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
    </children>
 </AnchorPane>

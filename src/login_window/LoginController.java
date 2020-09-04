@@ -8,26 +8,73 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
+import server.ClientInfo;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LoginController {
 
-    public void onLogInButton(String userName, String serverIP, int port, ActionEvent actionEvent) {
+    public void onLogInButton(String userName, String passwd, String serverIP, int port, ActionEvent actionEvent) {
         if(serverIsAvailable(serverIP,port))
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/client/client_gui.fxml"));
-            Parent root1 = (Parent) fxmlLoader.load();
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root1));
-            stage.show();
-            ClientGUI.createClient(userName,serverIP,port,stage);
-            ((Node)(actionEvent.getSource())).getScene().getWindow().hide();
+            if(checkUserPassAndLogin(userName,passwd)){
+                try {
+                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/client/client_gui.fxml"));
+                    Parent root1 = (Parent) fxmlLoader.load();
+                    Stage stage = new Stage();
+                    stage.setScene(new Scene(root1));
+                    stage.show();
+                    ClientGUI.createClient(userName,serverIP,port,stage);
+                    ((Node)(actionEvent.getSource())).getScene().getWindow().hide();
 
+                    sendToServerRequest("\\userList \\e",serverIP,port); //aktywowanie socketu TCP na serwerze
+                    getTCPactiveUsersList(serverIP);
+
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+    }
+
+    private void getTCPactiveUsersList(String serverIP) {
+        Socket socket = sendTCPRequest(serverIP);
+        recieveTCPRequest(socket);
+
+    }
+
+    private void recieveTCPRequest(Socket socket) {
+        try {
+            ObjectInputStream  objectInputStream = new ObjectInputStream(socket.getInputStream());
+            ArrayList<ArrayList> listOfUser = (ArrayList<ArrayList>) objectInputStream.readObject();
+
+            ClientGUI.addUsersToUsersList(listOfUser);
+           // BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+          //  System.out.println(bufferedReader.readLine());
         }catch (Exception e){
             e.printStackTrace();
         }
+
+    }
+
+    private Socket sendTCPRequest(String serverIP) {
+        try {
+            Socket socket = new Socket(serverIP,7777);
+            PrintWriter printWriter = new PrintWriter(socket.getOutputStream());
+            printWriter.println("tcp quest from client");
+            printWriter.flush();
+            return socket;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    private boolean checkUserPassAndLogin(String userName, String passwd) {
+        return true; //TODO mechanizm logownia do bazy
     }
 
     private boolean serverIsAvailable(String serverIP, int port) {
@@ -40,8 +87,10 @@ public class LoginController {
                 try {
                     socket.receive(getBack);
                     String messageFromClient = new String(getBackData);
-                    System.out.println(messageFromClient);
-                    return true;
+                    messageFromClient = messageFromClient.substring(0,messageFromClient.indexOf("\\e")); //end line tag
+                    if(messageFromClient.equals("true")){
+                        return true;
+                    }
                 } catch (SocketTimeoutException e) {
                      showWarningDialog(serverIP,port);
                     return false;
@@ -63,7 +112,6 @@ public class LoginController {
         }catch (Exception e){
             e.printStackTrace();
         }
-
         return null;
     }
 

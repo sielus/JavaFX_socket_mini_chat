@@ -1,8 +1,11 @@
 package client;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.Socket;
 
 public class ClientServer {
     DatagramSocket socket;
@@ -23,7 +26,10 @@ public class ClientServer {
         running = true;
         listen();
         send("\\con:" + name);
+
+
         clientGUI = new ClientGUI();
+
     }
 
     public void send(String message){
