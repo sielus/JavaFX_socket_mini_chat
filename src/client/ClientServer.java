@@ -28,6 +28,7 @@ public class ClientServer {
         send("\\con:" + name);
 
         send("\\userList");
+        send("\\pv:xdddd");
 
         clientGUI = new ClientGUI();
     }
@@ -53,6 +54,7 @@ public class ClientServer {
                         byte[] data = new byte[1024];
                         DatagramPacket datagramPacket = new DatagramPacket(data,data.length);
                         socket.receive(datagramPacket);
+                        System.out.println("Adres nadawcy " + datagramPacket.getAddress());
                         String messageFromClient = new String(data);
                         messageFromClient = messageFromClient.substring(0,messageFromClient.indexOf("\\e")); //end line tag
                         if(!isCommand(messageFromClient,datagramPacket)){

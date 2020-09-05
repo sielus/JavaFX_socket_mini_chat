@@ -42,7 +42,6 @@ public class Server {
     }
 
     private void sendActiveUserList(String userNametoExit) {
-        System.out.println("przed usunieciu" + usersList);
         if (userNametoExit != null) {
             int index = 0;
             for (ClientInfo info : clients) {
@@ -65,6 +64,22 @@ public class Server {
             }
             broadcast(usersList + "\\e");
         }
+    }
+    private void sentMessageOnPV(String userPvTarget, InetAddress senderUserAddress, int senderUserPort){
+                int index = 0;
+                InetAddress targetAddress;
+                int targetPort;
+        System.out.println("pv target " + senderUserAddress);
+//TODO dokonczyć pisanie, aktualnie masz target i adres odbiorcy, co masz to działa
+        System.out.println(senderUserPort);
+//                for (ClientInfo info : clients) {
+//                    if (userPvTarget.equalsIgnoreCase(info.getName())) {
+//                        targetAddress = info.getAddress();
+//                        targetPort = info.getPort();
+//                        break;
+//                    }
+//                    index++;
+//                }
     }
 
     private void listen(){
@@ -118,9 +133,16 @@ Commands :
         }else if(message.startsWith("\\disc:")){
             String name = message.substring(message.indexOf(":") + 1);
             userDisconectFromServer(name);
-        }
+        }else if(message.startsWith("\\pv:")){
+        String targetUserName = message.substring(message.indexOf(":") + 1);
+        System.out.println("dsadsadsadsadsa");
+            sentMessageOnPV(targetUserName, datagramPacket.getAddress(),datagramPacket.getPort());
+    }
         return false;
     }
+
+
+
 
     private void userDisconectFromServer(String name) {
         sendActiveUserList(name);
