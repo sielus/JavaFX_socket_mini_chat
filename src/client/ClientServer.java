@@ -1,11 +1,11 @@
 package client;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.Socket;
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ClientServer {
     DatagramSocket socket;
@@ -27,9 +27,9 @@ public class ClientServer {
         listen();
         send("\\con:" + name);
 
+        send("\\userList");
 
         clientGUI = new ClientGUI();
-
     }
 
     public void send(String message){
@@ -37,10 +37,9 @@ public class ClientServer {
             message += "\\e";
             byte[] data = message.getBytes();
             DatagramPacket datagramPacket = new DatagramPacket(data,data.length,address,port);
-
             socket.send(datagramPacket);
+            System.out.println("wysyłanie do ser" + message);
          //   System.out.println(message + " ip : " + datagramPacket.getAddress() + " port " + datagramPacket.getPort());
-
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -58,7 +57,10 @@ public class ClientServer {
                         messageFromClient = messageFromClient.substring(0,messageFromClient.indexOf("\\e")); //end line tag
                         if(!isCommand(messageFromClient,datagramPacket)){
                             //Print message
-                            clientGUI.printMessage(messageFromClient);
+                            if(!messageFromClient.isEmpty()){
+                                System.out.println(messageFromClient + "test nula");
+                                clientGUI.printMessage(messageFromClient);
+                            }
                         }
                     }
                 }catch (Exception e){
@@ -71,9 +73,28 @@ public class ClientServer {
     private static boolean isCommand(String message, DatagramPacket datagramPacket) {
         if(message.startsWith("\\con:")){
             return true;
+        }else if(message.startsWith("\\userList")) {
+            refreshUserActiveList(message);
+            return true;
         }
         return false;
     }
 
+    private static void refreshUserActiveList(String message) {
+        String usersActiveListString = new String(message);
 
+        usersActiveListString = (usersActiveListString.replace("\\userList",""));
+
+        ArrayList<String> userActiveList = new ArrayList<>();
+        Pattern pattern = Pattern.compile("\\w+");
+        Matcher matcher = pattern.matcher(usersActiveListString);
+        while (matcher.find()) {
+            userActiveList.add(matcher.group());
+        }
+        ClientGUI.addUsersToUsersList(userActiveList);
+    }
+
+    public void sendOnDisconectRequest() {
+        send("\\disc:" + name);
+    }
 }
