@@ -35,7 +35,6 @@ public class Server {
         }
     }
 
-
     private static void broadcast(String messageFromClient){
         for(ClientInfo info : clients){
             send(messageFromClient,info.getAddress(),info.getPort());
@@ -46,35 +45,19 @@ public class Server {
         System.out.println("przed usunieciu" + usersList);
         if (userNametoExit != null) {
             int index = 0;
-            boolean del = false;
             for (ClientInfo info : clients) {
                 if (userNametoExit.equalsIgnoreCase(info.getName())) {
-                    System.out.println("Dane do usuniecia");
-                    System.out.println(index);
-                    System.out.println(info.getName());
-                    System.out.println(clients.get(index));
-                    System.out.println("Koniec  do usuniecia");
-                    //clients.remove(index);
-                    del = true;
+                    clients.remove(index);
                     break;
                 }
                 index++;
             }
-            if(del){
-                clients.remove(index);
-            }
-
             usersList = "\\userList "; // List of active users on server
             for (ClientInfo info : clients) {
                 usersList += info.getName() + "|";
             }
-
-
-
-
             usersList.replace(userNametoExit,"");
             broadcast(usersList + "\\e");
-            System.out.println("po usunieciu" + usersList);
         }else {
             usersList = "\\userList "; // List of active users on server
             for (ClientInfo info : clients) {
@@ -82,10 +65,7 @@ public class Server {
             }
             broadcast(usersList + "\\e");
         }
-
     }
-
-
 
     private void listen(){
         Thread thread = new Thread("serverListen"){
@@ -146,8 +126,8 @@ Commands :
         sendActiveUserList(name);
     }
 
-    private void sendActiveUsersList(){ // Wysyłanie listy aktywnych użytkowników
-        //TODO ogarnąć dodawnaie nazw do stringa
+    private void sendActiveUsersList(){
+        // Wysyłanie listy aktywnych użytkowników
         //  usersList += "\\e";
         sendActiveUserList(null);
     }
