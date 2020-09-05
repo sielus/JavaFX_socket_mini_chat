@@ -32,7 +32,7 @@ public class LoginController {
                     ClientGUI.createClient(userName, serverIP, port, stage);
                     ((Node) (actionEvent.getSource())).getScene().getWindow().hide();
 
-                    getActiveUsersList("\\userList \\e",serverIP,port);
+                    //getActiveUsersList("\\userList \\e",serverIP,port);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -44,29 +44,36 @@ public class LoginController {
     private void getActiveUsersList(String commend, String serverIP, int port) throws SocketException {
         Thread thread = new Thread("listUser"){
             public void run(){
-                DatagramSocket socket = sendToServerRequest(commend,serverIP,port);
-                byte[] getBackData = new byte[1024];
-                DatagramPacket getBack = new DatagramPacket(getBackData, getBackData.length);
-                try {
-                    socket.receive(getBack);
-                    String usersActiveList = new String(getBackData);
-                    if(usersActiveList.startsWith("\\userList")){
+                while (true){
 
-                        usersActiveList = usersActiveList.substring(0,usersActiveList.indexOf("\\e")); //end line tag
-                        usersActiveList = (usersActiveList.replace("\\userList",""));
+                    DatagramSocket socket = sendToServerRequest(commend,serverIP,port);
+                    byte[] getBackData = new byte[1024];
+                    DatagramPacket getBack = new DatagramPacket(getBackData, getBackData.length);
+                    try {
+                        socket.receive(getBack);
+                        String usersActiveListString = new String(getBackData);
+                        if(usersActiveListString.startsWith("\\userList")){
 
-                        ArrayList<String> userActiveList = new ArrayList<>();
-                        Pattern pattern = Pattern.compile("\\w+");
-                        Matcher matcher = pattern.matcher(usersActiveList);
-                        while (matcher.find()) {
-                            userActiveList.add(matcher.group());
+                            usersActiveListString = usersActiveListString.substring(0,usersActiveListString.indexOf("\\e")); //end line tag
+                            usersActiveListString = (usersActiveListString.replace("\\userList",""));
+
+                            ArrayList<String> userActiveList = new ArrayList<>();
+                            Pattern pattern = Pattern.compile("\\w+");
+                            Matcher matcher = pattern.matcher(usersActiveListString);
+                            System.out.println("getActiveUsersList dziala");
+                            while (matcher.find()) {
+                                userActiveList.add(matcher.group());
+                                ClientGUI.addUsersToUsersList(userActiveList);
+                            }
+                            System.out.println(usersActiveListString);
+                            usersActiveListString = "";
+
                         }
-                        ClientGUI.addUsersToUsersList(userActiveList);
+                        //end line tagSystem.out.println(messageFromClient + " userlist");
+                        //socket.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                    //end line tagSystem.out.println(messageFromClient + " userlist");
-                    //socket.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
             }
         };thread.start();
