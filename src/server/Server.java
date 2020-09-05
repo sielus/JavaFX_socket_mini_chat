@@ -42,14 +42,50 @@ public class Server {
         }
     }
 
-    private void sendActiveUserList(String endMessage){
-        usersList = "\\userList "; // List of active users on server
-        for(ClientInfo info : clients){
-            usersList += info.getName() + "|";
+    private void sendActiveUserList(String userNametoExit) {
+        System.out.println("przed usunieciu" + usersList);
+        if (userNametoExit != null) {
+            int index = 0;
+            boolean del = false;
+            for (ClientInfo info : clients) {
+                if (userNametoExit.equalsIgnoreCase(info.getName())) {
+                    System.out.println("Dane do usuniecia");
+                    System.out.println(index);
+                    System.out.println(info.getName());
+                    System.out.println(clients.get(index));
+                    System.out.println("Koniec  do usuniecia");
+                    //clients.remove(index);
+                    del = true;
+                    break;
+                }
+                index++;
+            }
+            if(del){
+                clients.remove(index);
+            }
+
+            usersList = "\\userList "; // List of active users on server
+            for (ClientInfo info : clients) {
+                usersList += info.getName() + "|";
+            }
+
+
+
+
+            usersList.replace(userNametoExit,"");
+            broadcast(usersList + "\\e");
+            System.out.println("po usunieciu" + usersList);
+        }else {
+            usersList = "\\userList "; // List of active users on server
+            for (ClientInfo info : clients) {
+                usersList += info.getName() + "|";
+            }
+            broadcast(usersList + "\\e");
         }
-        broadcast(usersList + "\\e");
 
     }
+
+
 
     private void listen(){
         Thread thread = new Thread("serverListen"){
@@ -88,10 +124,9 @@ Commands :
             String name = message.substring(message.indexOf(":") + 1);
             clients.add(new ClientInfo(name,datagramPacket.getAddress(),datagramPacket.getPort()));
             broadcast("User " + name + " Connected");
-            //sendActiveUsersList(datagramPacket.getAddress());
             return true;
         }else if(message.startsWith("\\stopServer")){
-            running = false;
+            close();
             return true;  //TODO zmienić sposób wyłączenia serwera.
 
         }else if(message.startsWith("\\isAvailable")){
@@ -100,15 +135,21 @@ Commands :
         }else if(message.startsWith("\\userList")){
             sendActiveUsersList();
             return true;
+        }else if(message.startsWith("\\disc:")){
+            String name = message.substring(message.indexOf(":") + 1);
+            userDisconectFromServer(name);
         }
-
         return false;
+    }
+
+    private void userDisconectFromServer(String name) {
+        sendActiveUserList(name);
     }
 
     private void sendActiveUsersList(){ // Wysyłanie listy aktywnych użytkowników
         //TODO ogarnąć dodawnaie nazw do stringa
         //  usersList += "\\e";
-        sendActiveUserList("\\e");
+        sendActiveUserList(null);
     }
 
     private static void close(){

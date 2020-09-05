@@ -1,24 +1,27 @@
 package client;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.util.ArrayList;
 
 public class ClientGUI extends Application {
     private static Parent parent;
-    private static ClientServer clientServer;
+    static ClientServer clientServer;
     static public TextArea chatTextarea;
     private static String name;
-
+    static ListView<String> activeUserList;
     public static void main(String[] args) {
         launch(args);
     }
@@ -32,6 +35,15 @@ public class ClientGUI extends Application {
         name = userName;
         stage.setResizable(false);
         clientServer = new ClientServer(userName,ipAdress,port);
+        activeUserList = (ListView<String>) parent.lookup("#group_chat_list_users");
+
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent windowEvent) {
+                clientServer.sendOnDisconectRequest();
+            }
+        });
+
 
     }
 
@@ -51,7 +63,18 @@ public class ClientGUI extends Application {
     }
 
     public static void addUsersToUsersList(ArrayList list){
-        ListView<String> activeUserList= (ListView<String>) parent.lookup("#group_chat_list_users");
-        activeUserList.getItems().addAll(list);
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println(list);
+                activeUserList.getItems().removeAll();
+                activeUserList.getItems().clear();
+                activeUserList.getItems().addAll(list);
+                activeUserList.refresh();
+            }
+        });
+
+
+
     }
 }

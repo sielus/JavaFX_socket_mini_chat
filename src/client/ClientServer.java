@@ -1,11 +1,8 @@
 package client;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,10 +29,7 @@ public class ClientServer {
 
         send("\\userList");
 
-
-
         clientGUI = new ClientGUI();
-
     }
 
     public void send(String message){
@@ -46,7 +40,6 @@ public class ClientServer {
             socket.send(datagramPacket);
             System.out.println("wysyłanie do ser" + message);
          //   System.out.println(message + " ip : " + datagramPacket.getAddress() + " port " + datagramPacket.getPort());
-
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -61,13 +54,13 @@ public class ClientServer {
                         DatagramPacket datagramPacket = new DatagramPacket(data,data.length);
                         socket.receive(datagramPacket);
                         String messageFromClient = new String(data);
-
-                        System.out.println(messageFromClient + "listener");
-
                         messageFromClient = messageFromClient.substring(0,messageFromClient.indexOf("\\e")); //end line tag
                         if(!isCommand(messageFromClient,datagramPacket)){
                             //Print message
-                            clientGUI.printMessage(messageFromClient);
+                            if(!messageFromClient.isEmpty()){
+                                System.out.println(messageFromClient + "test nula");
+                                clientGUI.printMessage(messageFromClient);
+                            }
                         }
                     }
                 }catch (Exception e){
@@ -88,7 +81,6 @@ public class ClientServer {
     }
 
     private static void refreshUserActiveList(String message) {
-        System.out.println(message + "test");
         String usersActiveListString = new String(message);
 
         usersActiveListString = (usersActiveListString.replace("\\userList",""));
@@ -96,13 +88,13 @@ public class ClientServer {
         ArrayList<String> userActiveList = new ArrayList<>();
         Pattern pattern = Pattern.compile("\\w+");
         Matcher matcher = pattern.matcher(usersActiveListString);
-        System.out.println("getActiveUsersList dziala");
         while (matcher.find()) {
             userActiveList.add(matcher.group());
-            ClientGUI.addUsersToUsersList(userActiveList);
         }
-
+        ClientGUI.addUsersToUsersList(userActiveList);
     }
 
-
+    public void sendOnDisconectRequest() {
+        send("\\disc:" + name);
+    }
 }
