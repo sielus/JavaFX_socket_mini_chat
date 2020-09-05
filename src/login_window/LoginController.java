@@ -13,65 +13,66 @@ import server.ClientInfo;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LoginController {
 
     public void onLogInButton(String userName, String passwd, String serverIP, int port, ActionEvent actionEvent) {
-        if(serverIsAvailable(serverIP,port))
-            if(checkUserPassAndLogin(userName,passwd)){
+        if(serverIsAvailable(serverIP,port)) {
+            if (checkUserPassAndLogin(userName, passwd)) {
                 try {
                     FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/client/client_gui.fxml"));
                     Parent root1 = (Parent) fxmlLoader.load();
                     Stage stage = new Stage();
                     stage.setScene(new Scene(root1));
                     stage.show();
-                    ClientGUI.createClient(userName,serverIP,port,stage);
-                    ((Node)(actionEvent.getSource())).getScene().getWindow().hide();
+                    ClientGUI.createClient(userName, serverIP, port, stage);
+                    ((Node) (actionEvent.getSource())).getScene().getWindow().hide();
 
-                    sendToServerRequest("\\userList \\e",serverIP,port); //aktywowanie socketu TCP na serwerze
-                    getTCPactiveUsersList(serverIP);
+                    getActiveUsersList("\\userList \\e",serverIP,port);
 
-
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-    }
-
-    private void getTCPactiveUsersList(String serverIP) {
-        Socket socket = sendTCPRequest(serverIP);
-        recieveTCPRequest(socket);
-
-    }
-
-    private void recieveTCPRequest(Socket socket) {
-        try {
-            ObjectInputStream  objectInputStream = new ObjectInputStream(socket.getInputStream());
-            ArrayList<ArrayList> listOfUser = (ArrayList<ArrayList>) objectInputStream.readObject();
-
-            ClientGUI.addUsersToUsersList(listOfUser);
-           // BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-          //  System.out.println(bufferedReader.readLine());
-        }catch (Exception e){
-            e.printStackTrace();
         }
+    }
+
+    private void getActiveUsersList(String commend, String serverIP, int port) throws SocketException {
+        Thread thread = new Thread("listUser"){
+            public void run(){
+                DatagramSocket socket = sendToServerRequest(commend,serverIP,port);
+                byte[] getBackData = new byte[1024];
+                DatagramPacket getBack = new DatagramPacket(getBackData, getBackData.length);
+                try {
+                    socket.receive(getBack);
+                    String usersActiveList = new String(getBackData);
+                    if(usersActiveList.startsWith("\\userList")){
+
+                        usersActiveList = usersActiveList.substring(0,usersActiveList.indexOf("\\e")); //end line tag
+                        usersActiveList = (usersActiveList.replace("\\userList",""));
+
+                        ArrayList<String> userActiveList = new ArrayList<>();
+                        Pattern pattern = Pattern.compile("\\w+");
+                        Matcher matcher = pattern.matcher(usersActiveList);
+                        while (matcher.find()) {
+                            userActiveList.add(matcher.group());
+                        }
+                        ClientGUI.addUsersToUsersList(userActiveList);
+                    }
+                    //end line tagSystem.out.println(messageFromClient + " userlist");
+                    //socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        };thread.start();
 
     }
 
-    private Socket sendTCPRequest(String serverIP) {
-        try {
-            Socket socket = new Socket(serverIP,7777);
-            PrintWriter printWriter = new PrintWriter(socket.getOutputStream());
-            printWriter.println("tcp quest from client");
-            printWriter.flush();
-            return socket;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
 
     private boolean checkUserPassAndLogin(String userName, String passwd) {
         return true; //TODO mechanizm logownia do bazy
@@ -89,6 +90,7 @@ public class LoginController {
                     String messageFromClient = new String(getBackData);
                     messageFromClient = messageFromClient.substring(0,messageFromClient.indexOf("\\e")); //end line tag
                     if(messageFromClient.equals("true")){
+                        socket.close();
                         return true;
                     }
                 } catch (SocketTimeoutException e) {

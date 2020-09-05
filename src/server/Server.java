@@ -1,6 +1,5 @@
 package server;
 
-import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 
@@ -9,8 +8,7 @@ public class Server {
     private static int port;
     private static boolean running;
     private static ArrayList<ClientInfo> clients = new ArrayList<ClientInfo>(); //Clients list
-    private static ArrayList<String> clientsList = new ArrayList<>();
-
+    static String usersList = "\\userActive";
 
     public static void start(int port){
         try {
@@ -39,9 +37,11 @@ public class Server {
 
 
     private static void broadcast(String messageFromClient){
+        usersList = "\\userList"; // List of active users on server
         for(ClientInfo info : clients){
             send(messageFromClient,info.getAddress(),info.getPort());
-            clientsList.add(info.getName());
+            usersList += info.getName() + "|";
+
         }
     }
 
@@ -81,52 +81,36 @@ Commands :
             String name = message.substring(message.indexOf(":") + 1);
             clients.add(new ClientInfo(name,datagramPacket.getAddress(),datagramPacket.getPort()));
             broadcast("User " + name + " Connected");
-            sendActiveUsersList();
+            //sendActiveUsersList(datagramPacket.getAddress());
             return true;
         }else if(message.startsWith("\\stopServer")){
             running = false;
             return true;  //TODO zmienić sposób wyłączenia serwera.
 
         }else if(message.startsWith("\\isAvailable")){
+            System.out.println(datagramPacket.getAddress() + " datagram");
             send("true",datagramPacket.getAddress(),datagramPacket.getPort());
             return true;
         }else if(message.startsWith("\\userList")){
-            sendActiveUsersList();
+            sendActiveUsersList(datagramPacket.getAddress(),datagramPacket.getPort());
             return true;
         }
 
         return false;
     }
 
-    private static void sendActiveUsersList(){ // Wysyłanie listy aktywnych użytkowników
-
-        try {
-            ServerSocket serverSocket = new ServerSocket(7777);
-            Socket socket = serverSocket.accept(); // blocking call, this will wait until a connection is attempted on this port.
-
-            InputStreamReader inputStreamReader = new InputStreamReader(socket.getInputStream());
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            System.out.println(bufferedReader.readLine());
-
-          //  PrintWriter printWriter = new PrintWriter(socket.getOutputStream()); // Wysłanie TCP do klienta
-
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+    private static void sendActiveUsersList(InetAddress address,int userPort){ // Wysyłanie listy aktywnych użytkowników
+                try {
 
 
-            objectOutputStream.writeObject(clientsList);
-            serverSocket.close();
-            socket.close();
-          //  socket.close();
-           // printWriter.println("TCP request from server");
-           // printWriter.flush();
-//            DatagramPacket datagramPacket = new DatagramPacket(,arrayList.size(),address,port);
-//            datagramSocket.send(datagramPacket);
-//            System.out.println("Send message to " + address.getHostAddress() + port);
+                    //TODO ogarnąć dodawnaie nazw do stringa
+                    usersList += "\\e";
+                    DatagramPacket datagramPacket = new DatagramPacket((usersList).getBytes(),((usersList).getBytes()).length,address,userPort);
+                    datagramSocket.send(datagramPacket);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
     }
 
     private static void close(){
