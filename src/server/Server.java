@@ -2,9 +2,6 @@ package server;
 
 import java.net.*;
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class Server {
     private static DatagramSocket datagramSocket;
     private static int port;
@@ -30,7 +27,7 @@ public class Server {
             byte[] data = message.getBytes();
             DatagramPacket datagramPacket = new DatagramPacket(data,data.length,address,port);
             datagramSocket.send(datagramPacket);
-            System.out.println("Send message to " + address.getHostAddress() + port);
+            System.out.println("Send message to " + address + port);
 
         }catch (Exception e){
             e.printStackTrace();
@@ -39,6 +36,7 @@ public class Server {
 
     private static void broadcast(String messageFromClient){
         for(ClientInfo info : clients){
+            System.out.println("broadadsad");
             send(messageFromClient,info.getAddress(),info.getPort());
         }
     }
@@ -80,11 +78,10 @@ public class Server {
                     }
                 }
     }
-
     private void sendPVmessage(String userPVTargetName, InetAddress targetAddress, int targetPort, String messagePV, String userPVSenderName) {
+        System.out.println(targetAddress);
         send("\\pvMessage:" + userPVTargetName + "|" + userPVSenderName + "|" + messagePV + "\\e",targetAddress,targetPort);
     }
-
 
     private void listen(){
         Thread thread = new Thread("serverListen"){
@@ -137,7 +134,7 @@ Commands :
         }else if(message.startsWith("\\disc:")){
             String name = message.substring(message.indexOf(":") + 1);
             userDisconectFromServer(name);
-
+            return true;
         }else if(message.startsWith("\\pvMessage:")){
             String pvMessageBeforeEncode = message.substring(message.indexOf(":") + 1);
             String usersActiveListString = new String(pvMessageBeforeEncode);
@@ -149,12 +146,10 @@ Commands :
 
             System.out.println(messagePV);
             beforeSendPVMessage(messagePV,targetUserName,nameSender);
+            return true;
     }
         return false;
     }
-
-
-
 
     private void userDisconectFromServer(String name) {
         sendActiveUserList(name);
@@ -170,6 +165,5 @@ Commands :
         running = false;
         datagramSocket.close();
     }
-
 
 }

@@ -22,7 +22,8 @@ public class LoginController {
                     Stage stage = new Stage();
                     stage.setScene(new Scene(root1));
                     stage.show();
-                    ClientGUI.createClient(userName, serverIP, port, stage);
+                    ClientGUI clientGUI = new ClientGUI();
+                    clientGUI.createClient(userName, serverIP, port, stage);
                     ((Node) (actionEvent.getSource())).getScene().getWindow().hide();
                     //getActiveUsersList("\\userList \\e",serverIP,port);
                 } catch (Exception e) {
