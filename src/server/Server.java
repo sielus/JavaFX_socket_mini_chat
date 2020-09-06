@@ -2,6 +2,8 @@ package server;
 
 import java.net.*;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Server {
     private static DatagramSocket datagramSocket;
@@ -65,22 +67,24 @@ public class Server {
             broadcast(usersList + "\\e");
         }
     }
-    private void sentMessageOnPV(String userPvTarget, InetAddress senderUserAddress, int senderUserPort){
-                int index = 0;
+    private void beforeSendPVMessage(String messagePV,String userPVTargetName,String userPVSenderName){
                 InetAddress targetAddress;
                 int targetPort;
-        System.out.println("pv target " + senderUserAddress);
 //TODO dokonczyć pisanie, aktualnie masz target i adres odbiorcy, co masz to działa
-        System.out.println(senderUserPort);
-//                for (ClientInfo info : clients) {
-//                    if (userPvTarget.equalsIgnoreCase(info.getName())) {
-//                        targetAddress = info.getAddress();
-//                        targetPort = info.getPort();
-//                        break;
-//                    }
-//                    index++;
-//                }
+                for (ClientInfo info : clients) {
+                    if (userPVTargetName.equalsIgnoreCase(info.getName())) {
+                        targetAddress = info.getAddress();
+                        targetPort = info.getPort();
+                        sendPVmessage(userPVTargetName,targetAddress,targetPort,messagePV,userPVSenderName);
+                        break;
+                    }
+                }
     }
+
+    private void sendPVmessage(String userPVTargetName, InetAddress targetAddress, int targetPort, String messagePV, String userPVSenderName) {
+        send("\\pvMessage:" + userPVTargetName + "|" + userPVSenderName + "|" + messagePV + "\\e",targetAddress,targetPort);
+    }
+
 
     private void listen(){
         Thread thread = new Thread("serverListen"){
@@ -94,7 +98,7 @@ public class Server {
 
                         messageFromClient = messageFromClient.substring(0,messageFromClient.indexOf("\\e")); //end line tag
                         //broadcast(messageFromClient);
-                        System.out.println(messageFromClient + " wiadomosc od klienta ");
+                      //  System.out.println(messageFromClient + " wiadomosc od klienta ");
                         if(!isCommand(messageFromClient,datagramPacket)){
                             broadcast(messageFromClient);
                         }
@@ -133,10 +137,18 @@ Commands :
         }else if(message.startsWith("\\disc:")){
             String name = message.substring(message.indexOf(":") + 1);
             userDisconectFromServer(name);
-        }else if(message.startsWith("\\pv:")){
-        String targetUserName = message.substring(message.indexOf(":") + 1);
-        System.out.println("dsadsadsadsadsa");
-            sentMessageOnPV(targetUserName, datagramPacket.getAddress(),datagramPacket.getPort());
+
+        }else if(message.startsWith("\\pvMessage:")){
+            String pvMessageBeforeEncode = message.substring(message.indexOf(":") + 1);
+            String usersActiveListString = new String(pvMessageBeforeEncode);
+
+            String[] result = usersActiveListString.split("\\|");
+            String targetUserName = result[0];
+            String nameSender = result[1];
+            String messagePV = result[2];
+
+            System.out.println(messagePV);
+            beforeSendPVMessage(messagePV,targetUserName,nameSender);
     }
         return false;
     }

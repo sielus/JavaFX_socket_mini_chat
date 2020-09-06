@@ -11,6 +11,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -36,6 +37,14 @@ public class ClientGUI extends Application {
         stage.setResizable(false);
         clientServer = new ClientServer(userName,ipAdress,port);
         activeUserList = (ListView<String>) parent.lookup("#group_chat_list_users");
+
+        activeUserList.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+              String targetUserName = activeUserList.getSelectionModel().getSelectedItem();
+                clientServer.send("\\pvMessage:" + targetUserName + "|" + name + "|" + "xxxx");
+            }
+        });
 
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
@@ -66,7 +75,6 @@ public class ClientGUI extends Application {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                System.out.println(list);
                 activeUserList.getItems().removeAll();
                 activeUserList.getItems().clear();
                 activeUserList.getItems().addAll(list);

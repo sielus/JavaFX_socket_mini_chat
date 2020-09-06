@@ -28,7 +28,6 @@ public class ClientServer {
         send("\\con:" + name);
 
         send("\\userList");
-        send("\\pv:xdddd");
 
         clientGUI = new ClientGUI();
     }
@@ -39,8 +38,7 @@ public class ClientServer {
             byte[] data = message.getBytes();
             DatagramPacket datagramPacket = new DatagramPacket(data,data.length,address,port);
             socket.send(datagramPacket);
-            System.out.println("wysyłanie do ser" + message);
-         //   System.out.println(message + " ip : " + datagramPacket.getAddress() + " port " + datagramPacket.getPort());
+            System.out.println(message);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -54,13 +52,12 @@ public class ClientServer {
                         byte[] data = new byte[1024];
                         DatagramPacket datagramPacket = new DatagramPacket(data,data.length);
                         socket.receive(datagramPacket);
-                        System.out.println("Adres nadawcy " + datagramPacket.getAddress());
                         String messageFromClient = new String(data);
+                        System.out.println(messageFromClient);
                         messageFromClient = messageFromClient.substring(0,messageFromClient.indexOf("\\e")); //end line tag
                         if(!isCommand(messageFromClient,datagramPacket)){
                             //Print message
                             if(!messageFromClient.isEmpty()){
-                                System.out.println(messageFromClient + "test nula");
                                 clientGUI.printMessage(messageFromClient);
                             }
                         }
@@ -78,8 +75,20 @@ public class ClientServer {
         }else if(message.startsWith("\\userList")) {
             refreshUserActiveList(message);
             return true;
-        }
+        } else if(message.startsWith("\\pvStart:")) {
+            String senderUserNamePV = message.substring(message.indexOf(":") + 1);
+            startNewPWwindow(senderUserNamePV);
+            return true;
+        }else if(message.startsWith("\\pvMessage:")) {
+        startNewPWwindow(message);
+        return true;
+    }
         return false;
+    }
+
+    private static void startNewPWwindow(String senderUserNamePV) {
+        System.out.println(senderUserNamePV + " okno");
+
     }
 
     private static void refreshUserActiveList(String message) {
