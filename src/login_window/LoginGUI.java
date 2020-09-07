@@ -10,14 +10,19 @@ import javafx.stage.Stage;
 
 public class LoginGUI extends Application {
 
+    public TextField text_input_server_port_tcp;
+
     public String getUserPasswd() {
         return text_input_user_passwd.getText();
     }
 
     public TextField text_input_user_passwd;
 
-    public int getPort() {
-        return Integer.parseInt(text_input_server_port.getText());
+    public int getPortUDP() {
+        return Integer.parseInt(text_input_server_port_udp.getText());
+    }
+    public int getPortTCP() {
+        return Integer.parseInt(text_input_server_port_tcp.getText());
     }
 
     public String getUserName() {
@@ -28,7 +33,7 @@ public class LoginGUI extends Application {
         return text_input_server_ip.getText();
     }
 
-    public TextField text_input_server_port;
+    public TextField text_input_server_port_udp;
     public TextField text_input_user_name;
     public TextField text_input_server_ip;
     LoginController loginController;
@@ -51,7 +56,7 @@ public class LoginGUI extends Application {
     public void logIntoServer(ActionEvent actionEvent) { //Button from login sreen
         //ClientGUI clientGUI = new ClientGUI(text_input_user_name.getText(),text_input_server_ip.getText(),Integer.parseInt(text_input_server_port.getText()));
         loginController = new LoginController();
-        loginController.onLogInButton(getUserName(),getUserPasswd(),getServerIP(),getPort(),actionEvent);
+        loginController.onLogInButton(getUserName(),getUserPasswd(),getServerIP(),getPortUDP(),getPortTCP(),actionEvent);
     }
 }
 

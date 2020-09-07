@@ -7,22 +7,27 @@ import javafx.scene.control.Hyperlink;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.Timer;
+
 public class Server {
     private static DatagramSocket datagramSocket;
     private static int port;
-    private static boolean running;
+    public static int portTCP;
+    private  boolean running;
     private static ArrayList<ClientInfo> clients = new ArrayList<ClientInfo>(); //Clients list
     static String usersList = "\\userActive";
+    public Thread thread;
 
     public void start(int port) {
         try {
             datagramSocket = new DatagramSocket(port);
             running = true;
             listen();
-            System.out.println("Server start on port " + port);
+            ChatServerGUI.printLogServer("Server start on UDP port " + port);
+            ChatServerGUI.setServerStatus("Working");
 
         } catch (Exception e) {
-            e.printStackTrace();
+            ChatServerGUI.printLogServer(e.getMessage());
         }
     }
 
@@ -32,7 +37,7 @@ public class Server {
             byte[] data = message.getBytes();
             DatagramPacket datagramPacket = new DatagramPacket(data, data.length, address, port);
             datagramSocket.send(datagramPacket);
-            System.out.println("Send message to " + address + port);
+            ChatServerGUI.printLogServer("Send message to " + address + port);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -41,7 +46,6 @@ public class Server {
 
     private static void broadcast(String messageFromClient) {
         for (ClientInfo info : clients) {
-            System.out.println("broadadsad");
             send(messageFromClient, info.getAddress(), info.getPort());
         }
     }
@@ -86,12 +90,12 @@ public class Server {
     }
 
     private void sendPVmessage(String userPVTargetName, InetAddress targetAddress, int targetPort, String messagePV, String userPVSenderName) {
-        System.out.println(targetAddress);
+        System.out.println(targetAddress); // Its must be here. Why? Idk
         send("\\pvMessage:" + userPVTargetName + "|" + userPVSenderName + "|" + messagePV + "\\e", targetAddress, targetPort);
     }
 
     private void listen() {
-        Thread thread = new Thread("serverListen") {
+        thread = new Thread("serverListen") {
             public void run() {
                 try {
                     while (running) {
@@ -100,15 +104,19 @@ public class Server {
                         datagramSocket.receive(datagramPacket);
                         String messageFromClient = new String(data);
 
+
                         messageFromClient = messageFromClient.substring(0, messageFromClient.indexOf("\\e")); //end line tag
                         //broadcast(messageFromClient);
                         //  System.out.println(messageFromClient + " wiadomosc od klienta ");
                         if (!isCommand(messageFromClient, datagramPacket)) {
                             broadcast(messageFromClient);
                         }
+
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                    ChatServerGUI.printLogServer(e.getMessage());
+
                 }
             }
         };
@@ -121,6 +129,7 @@ public class Server {
     // \con -> new user connected
     // \stopServer -> stopping server
     // \ userList -> Active TCP and send active users list
+    // \ disc -> user disconnect
     // \isAvailable-> check if server is available
 
      */
@@ -174,15 +183,21 @@ public class Server {
         OutputStream outputStream = null;
         InputStreamReader inputStreamReader = null;
         BufferedReader bufferedReader = null;
+        ChatServerGUI.printLogServer("Receiving File via TCP | start from " + userSenderName);
+
 
         try {
-            serverSocket = new ServerSocket(2137);
+            serverSocket = new ServerSocket(portTCP);
         } catch (Exception e) {
+            ChatServerGUI.printLogServer(e.getMessage());
+
             e.printStackTrace();
         }
         try {
             socket = serverSocket.accept();
         } catch (Exception e) {
+            ChatServerGUI.printLogServer(e.getMessage());
+
             e.printStackTrace();
         }
         try {
@@ -193,6 +208,8 @@ public class Server {
             outputStream = new FileOutputStream("filesOnServer\\" + fileName);
             createHyperlink(fileName, userSenderName);
         } catch (Exception e) {
+            ChatServerGUI.printLogServer(e.getMessage());
+
             e.printStackTrace();
         }
         try {
@@ -205,6 +222,8 @@ public class Server {
             e.printStackTrace();
         }
         try {
+            ChatServerGUI.printLogServer("Receiving File via TCP | closing sockets");
+
             outputStream.close();
             inputStream.close();
             socket.close();
@@ -226,12 +245,13 @@ public class Server {
         sendActiveUserList(null);
     }
 
-    private static void close() {
+    public void close() {
         running = false;
         datagramSocket.close();
     }
 
     private void sendFileToClient() {
+        ChatServerGUI.printLogServer("Sending File via TCP | starting");
 
         ServerSocket serverSocket = null;
         Socket socket = null;
@@ -241,13 +261,15 @@ public class Server {
         BufferedReader bufferedReader = null;
 
         try {
-            serverSocket = new ServerSocket(2137);
+            serverSocket = new ServerSocket(portTCP);
         } catch (Exception e) {
+            ChatServerGUI.printLogServer(e.getMessage());
             e.printStackTrace();
         }
         try {
             socket = serverSocket.accept();
         } catch (Exception e) {
+            ChatServerGUI.printLogServer(e.getMessage());
             e.printStackTrace();
         }
         try {
@@ -255,6 +277,7 @@ public class Server {
             bufferedReader = new BufferedReader(inputStreamReader);
             fileName = bufferedReader.readLine();
         }catch (Exception e){
+            ChatServerGUI.printLogServer(e.getMessage());
             e.printStackTrace();
         }
 
@@ -274,8 +297,11 @@ public class Server {
             serverSocket.close();
             bufferedReader.close();
             inputStreamReader.close();
+            ChatServerGUI.printLogServer("Sending File via TCP | closing sockets");
+
 
         }catch (Exception e){
+            ChatServerGUI.printLogServer(e.getMessage());
             e.printStackTrace();
         }
     }

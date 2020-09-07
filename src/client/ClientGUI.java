@@ -1,16 +1,15 @@
 package client;
 
-import com.sun.prism.Image;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.*;
@@ -19,6 +18,11 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import javax.imageio.ImageIO;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
@@ -30,8 +34,10 @@ public class ClientGUI extends Application {
     public static Stage stagex;
     public static ClientServer clientServer;
     private static String name;
+    public static int tcpPort;
 
     @FXML static ListView<String> activeUserList;
+    public ScrollPane sp;
 
     public static void main(String[] args) {
         launch(args);
@@ -39,24 +45,43 @@ public class ClientGUI extends Application {
 
     public void printMessage (String message,String command,Hyperlink hyperlink){
         setTextInTextFlow(message + "\n",command,hyperlink);
+        sp = (ScrollPane) parent.lookup("#sp");
+        sp.setVvalue(1);
     }
 
-    public  void createClient(String userName, String ipAdress, int port, Stage stage){
+    public  void createClient(String userName, String ipAdress, int serverPortUDP, int serverPortTCP, Stage stage) throws AWTException {
         stagex = stage;
         parent = stage.getScene().getRoot();
         name = userName;
+        tcpPort = serverPortTCP;
 
         stage.setTitle("Chat Sielus 'Let's Talk! :3 | Użytkownik " + userName);
         stage.setResizable(false);
-        clientServer = new ClientServer(userName,ipAdress,port);
+
+
+        stage.focusedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean lostFocus, Boolean gainFocus) -> {
+            if (gainFocus) {
+                System.out.println("dsadsadsadsadsadsa"); //TODO powiadomienia gdy brak focusu o nowych wiadomosciach
+            }else {
+
+            }
+        });
+
+
+
+
+
+        clientServer = new ClientServer(userName,ipAdress,serverPortUDP);
         activeUserList = (ListView<String>) parent.lookup("#group_chat_list_users");
+
+
 
         activeUserList.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
               String targetUserName = activeUserList.getSelectionModel().getSelectedItem();
               openInputDialog(targetUserName);
-            }
+                  }
         });
 
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -65,7 +90,11 @@ public class ClientGUI extends Application {
                 clientServer.sendOnDisconectRequest();
             }
         });
+
+
     }
+
+
 
     private void openInputDialog(String targetUserName) {
         TextInputDialog dialog = new TextInputDialog("");
@@ -78,6 +107,8 @@ public class ClientGUI extends Application {
             printMessage("Wiadomość prywatna "+ result.get() +" od ciebie do " + targetUserName,"pvSEND",null);
         }
     }
+
+
 
     @Override
     public void start(Stage primaryStage) {
@@ -138,26 +169,38 @@ public class ClientGUI extends Application {
     public void sendFileButton(ActionEvent actionEvent) throws IOException {
 
         FileChooser fileChooser = new FileChooser();
-        clientServer.send("\\startSendingTCPfile:" + name);
-        Socket sock = new Socket(clientServer.address, 2137);
+
         File file = fileChooser.showOpenDialog(null);
+        if(file!=null){
+            clientServer.send("\\startSendingTCPfile:" + name);
+            Socket sock = new Socket(clientServer.address, tcpPort);
+            PrintWriter printWriter = new PrintWriter(sock.getOutputStream());
+            printWriter.println(file.getName());
+            printWriter.flush();
 
-        PrintWriter printWriter = new PrintWriter(sock.getOutputStream());
-        printWriter.println(file.getName());
-        printWriter.flush();
+            byte[] bytes = new byte[20*1024*1024];
+            InputStream inputStream = new FileInputStream(file);
+            OutputStream outputStream = sock.getOutputStream();
 
-        byte[] bytes = new byte[20*1024*1024];
-        InputStream inputStream = new FileInputStream(file);
-        OutputStream outputStream = sock.getOutputStream();
-
-        int i;
-        while ((i = inputStream.read(bytes)) > 0){
-            outputStream.write(bytes,0,i);
+            int i;
+            while ((i = inputStream.read(bytes)) > 0){
+                outputStream.write(bytes,0,i);
+            }
+            outputStream.close();
+            inputStream.close();
+            sock.close();
         }
-        outputStream.close();
-        inputStream.close();
-        sock.close();
+    }
 
+
+    public void displayTray() throws AWTException {
+        SystemTray tray = SystemTray.getSystemTray();
+        Image image = Toolkit.getDefaultToolkit().createImage("icon.png");
+        TrayIcon trayIcon = new TrayIcon(image, "Tray Demo");
+        trayIcon.setImageAutoSize(true);
+        trayIcon.setToolTip("System tray icon demo");
+        tray.add(trayIcon);
+        trayIcon.displayMessage("Hello, World", "notification demo", TrayIcon.MessageType.INFO);
     }
 
 }

@@ -114,7 +114,7 @@ public class ClientServer {
     private void downloadFileFromServer(String fileName) {
         send("\\startSendingFileToClientTCP");
         try {
-            Socket sock = new Socket(address, 2137);
+            Socket sock = new Socket(address, ClientGUI.tcpPort);
             PrintWriter printWriter = new PrintWriter(sock.getOutputStream());
             printWriter.println(fileName);
             printWriter.flush();

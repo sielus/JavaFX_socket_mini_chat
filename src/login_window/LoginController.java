@@ -13,8 +13,8 @@ import java.net.*;
 
 public class LoginController {
 
-    public void onLogInButton(String userName, String passwd, String serverIP, int port, ActionEvent actionEvent) {
-        if(serverIsAvailable(serverIP,port)) {
+    public void onLogInButton(String userName, String passwd, String serverIP, int udpPort,int tcpPort, ActionEvent actionEvent) {
+        if(serverIsAvailable(serverIP,udpPort)) {
             if (checkUserPassAndLogin(userName, passwd)) {
                 try {
                     FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/client/client_gui.fxml"));
@@ -23,11 +23,12 @@ public class LoginController {
                     stage.setScene(new Scene(root1));
                     stage.show();
                     ClientGUI clientGUI = new ClientGUI();
-                    clientGUI.createClient(userName, serverIP, port, stage);
+                    clientGUI.createClient(userName, serverIP, udpPort,tcpPort, stage);
                     ((Node) (actionEvent.getSource())).getScene().getWindow().hide();
                     //getActiveUsersList("\\userList \\e",serverIP,port);
                 } catch (Exception e) {
                     e.printStackTrace();
+
                 }
             }
         }
