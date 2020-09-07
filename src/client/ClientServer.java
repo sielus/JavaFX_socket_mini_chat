@@ -1,15 +1,22 @@
 package client;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.Hyperlink;
+
+import javax.swing.*;
+import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ClientServer {
     public static DatagramSocket socket;
-    private InetAddress address;
+    public InetAddress address;
     private int port;
     private boolean running;
     private String name;
@@ -60,7 +67,7 @@ public class ClientServer {
                         if(!isCommand(messageFromClient,datagramPacket)){
                             //Print message
                             if(!messageFromClient.isEmpty()){
-                                clientGUI.printMessage(messageFromClient,"normal");
+                                clientGUI.printMessage(messageFromClient,"normal",null);
                             }
                         }
                     }
@@ -74,7 +81,7 @@ public class ClientServer {
     private boolean isCommand(String message, DatagramPacket datagramPacket) {
         if(message.startsWith("\\con:")){
             String newUserConnected = message.substring(message.indexOf(":") + 1);
-            clientGUI.printMessage(newUserConnected,"serverCOMMAND");
+            clientGUI.printMessage(newUserConnected,"serverCOMMAND",null);
             return true;
         }else if(message.startsWith("\\userList")) {
             refreshUserActiveList(message);
@@ -82,8 +89,61 @@ public class ClientServer {
         }else if(message.startsWith("\\pvMessage:")) {
             startNewPWwindow(message);
         return true;
-    }
+        }else if(message.startsWith("\\newFileOnServer")) {
+            String fileName = message.substring(message.indexOf(":") + 1,message.indexOf("|"));
+           // fileName = (fileName.replace("\\userList",""));
+            String senderName = message.substring(message.indexOf("|")+1);
+
+            generateHyperlink(fileName,senderName);
+            return true;
+        }
         return false;
+    }
+
+    private void generateHyperlink(String fileName,String senderName) {
+        Hyperlink hyperlink = new Hyperlink(fileName);
+        hyperlink.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                downloadFileFromServer(fileName);
+            }
+        });
+        clientGUI.printMessage("Plik użytkownika " + senderName,"hyperlink",hyperlink);
+    }
+
+    private void downloadFileFromServer(String fileName) {
+        send("\\startSendingFileToClientTCP");
+        try {
+            Socket sock = new Socket(address, 2137);
+            PrintWriter printWriter = new PrintWriter(sock.getOutputStream());
+            printWriter.println(fileName);
+            printWriter.flush();
+
+            InputStream inputStream = sock.getInputStream();
+            OutputStream outputStream = null;
+            JFrame parentFrame = new JFrame();
+
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Save as");
+            fileChooser.setSelectedFile(new File(fileName));
+            int userSelection = fileChooser.showSaveDialog(parentFrame);
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+                String path = fileChooser.getSelectedFile().getAbsolutePath();
+                System.out.println(path);
+                outputStream = new FileOutputStream(path);
+                byte[] bytes = new byte[20 * 1024 * 1024];
+                int count;
+                while ((count = inputStream.read(bytes)) > 0) {
+                    outputStream.write(bytes, 0, count);
+                }
+                outputStream.close();
+                inputStream.close();
+                sock.close();
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void startNewPWwindow(String message) {
@@ -93,7 +153,7 @@ public class ClientServer {
         String targetUserName = result[0];
         String nameSender = result[1];
         String messagePV = result[2];
-        clientGUI.printMessage("Wiadomośc prywatna od " + nameSender + " do ciebie : " + messagePV,"pvRECIEVE");
+        clientGUI.printMessage("Wiadomośc prywatna od " + nameSender + " do ciebie : " + messagePV,"pvRECIEVE",null);
     }
 
     private static void refreshUserActiveList(String message) {

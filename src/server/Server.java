@@ -1,5 +1,9 @@
 package server;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.Hyperlink;
+
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
@@ -10,35 +14,35 @@ public class Server {
     private static ArrayList<ClientInfo> clients = new ArrayList<ClientInfo>(); //Clients list
     static String usersList = "\\userActive";
 
-    public void start(int port){
+    public void start(int port) {
         try {
             datagramSocket = new DatagramSocket(port);
             running = true;
             listen();
             System.out.println("Server start on port " + port);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static void send(String message, InetAddress address, int port){
+    private static void send(String message, InetAddress address, int port) {
         try {
             message += "\\e";
             byte[] data = message.getBytes();
-            DatagramPacket datagramPacket = new DatagramPacket(data,data.length,address,port);
+            DatagramPacket datagramPacket = new DatagramPacket(data, data.length, address, port);
             datagramSocket.send(datagramPacket);
             System.out.println("Send message to " + address + port);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static void broadcast(String messageFromClient){
-        for(ClientInfo info : clients){
+    private static void broadcast(String messageFromClient) {
+        for (ClientInfo info : clients) {
             System.out.println("broadadsad");
-            send(messageFromClient,info.getAddress(),info.getPort());
+            send(messageFromClient, info.getAddress(), info.getPort());
         }
     }
 
@@ -56,9 +60,9 @@ public class Server {
             for (ClientInfo info : clients) {
                 usersList += info.getName() + "|";
             }
-            usersList.replace(userNametoExit,"");
+            usersList.replace(userNametoExit, "");
             broadcast(usersList + "\\e");
-        }else {
+        } else {
             usersList = "\\userList "; // List of active users on server
             for (ClientInfo info : clients) {
                 usersList += info.getName() + "|";
@@ -66,76 +70,80 @@ public class Server {
             broadcast(usersList + "\\e");
         }
     }
-    private void beforeSendPVMessage(String messagePV,String userPVTargetName,String userPVSenderName){
-                InetAddress targetAddress;
-                int targetPort;
+
+    private void beforeSendPVMessage(String messagePV, String userPVTargetName, String userPVSenderName) {
+        InetAddress targetAddress;
+        int targetPort;
 //TODO dokonczyć pisanie, aktualnie masz target i adres odbiorcy, co masz to działa
-                for (ClientInfo info : clients) {
-                    if (userPVTargetName.equalsIgnoreCase(info.getName())) {
-                        targetAddress = info.getAddress();
-                        targetPort = info.getPort();
-                        sendPVmessage(userPVTargetName,targetAddress,targetPort,messagePV,userPVSenderName);
-                        break;
-                    }
-                }
-    }
-    private void sendPVmessage(String userPVTargetName, InetAddress targetAddress, int targetPort, String messagePV, String userPVSenderName) {
-        System.out.println(targetAddress);
-        send("\\pvMessage:" + userPVTargetName + "|" + userPVSenderName + "|" + messagePV + "\\e",targetAddress,targetPort);
+        for (ClientInfo info : clients) {
+            if (userPVTargetName.equalsIgnoreCase(info.getName())) {
+                targetAddress = info.getAddress();
+                targetPort = info.getPort();
+                sendPVmessage(userPVTargetName, targetAddress, targetPort, messagePV, userPVSenderName);
+                break;
+            }
+        }
     }
 
-    private void listen(){
-        Thread thread = new Thread("serverListen"){
-            public void run(){
+    private void sendPVmessage(String userPVTargetName, InetAddress targetAddress, int targetPort, String messagePV, String userPVSenderName) {
+        System.out.println(targetAddress);
+        send("\\pvMessage:" + userPVTargetName + "|" + userPVSenderName + "|" + messagePV + "\\e", targetAddress, targetPort);
+    }
+
+    private void listen() {
+        Thread thread = new Thread("serverListen") {
+            public void run() {
                 try {
-                    while(running){
+                    while (running) {
                         byte[] data = new byte[1024];
-                        DatagramPacket datagramPacket = new DatagramPacket(data,data.length);
+                        DatagramPacket datagramPacket = new DatagramPacket(data, data.length);
                         datagramSocket.receive(datagramPacket);
                         String messageFromClient = new String(data);
 
-                        messageFromClient = messageFromClient.substring(0,messageFromClient.indexOf("\\e")); //end line tag
+                        messageFromClient = messageFromClient.substring(0, messageFromClient.indexOf("\\e")); //end line tag
                         //broadcast(messageFromClient);
-                      //  System.out.println(messageFromClient + " wiadomosc od klienta ");
-                        if(!isCommand(messageFromClient,datagramPacket)){
+                        //  System.out.println(messageFromClient + " wiadomosc od klienta ");
+                        if (!isCommand(messageFromClient, datagramPacket)) {
                             broadcast(messageFromClient);
                         }
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-        }; thread.start();
+        };
+        thread.start();
     }
-/*
 
-Commands :
-// \con -> new user connected
-// \stopServer -> stopping server
-// \ userList -> Active TCP and send active users list
-// \isAvailable-> check if server is available
+    /*
 
- */
+    Commands :
+    // \con -> new user connected
+    // \stopServer -> stopping server
+    // \ userList -> Active TCP and send active users list
+    // \isAvailable-> check if server is available
+
+     */
     private boolean isCommand(String message, DatagramPacket datagramPacket) {
-        if(message.startsWith("\\con:")){
+        if (message.startsWith("\\con:")) {
             String name = message.substring(message.indexOf(":") + 1);
-            clients.add(new ClientInfo(name,datagramPacket.getAddress(),datagramPacket.getPort()));
+            clients.add(new ClientInfo(name, datagramPacket.getAddress(), datagramPacket.getPort()));
             broadcast("\\con:User " + name + " Connected");
             return true;
-        }else if(message.startsWith("\\stopServer")){
+        } else if (message.startsWith("\\stopServer")) {
             close();
             return true;  //TODO zmienić sposób wyłączenia serwera.
-        }else if(message.startsWith("\\isAvailable")){
-            send("true",datagramPacket.getAddress(),datagramPacket.getPort());
+        } else if (message.startsWith("\\isAvailable")) {
+            send("true", datagramPacket.getAddress(), datagramPacket.getPort());
             return true;
-        }else if(message.startsWith("\\userList")){
+        } else if (message.startsWith("\\userList")) {
             sendActiveUsersList();
             return true;
-        }else if(message.startsWith("\\disc:")){
+        } else if (message.startsWith("\\disc:")) {
             String name = message.substring(message.indexOf(":") + 1);
             userDisconectFromServer(name);
             return true;
-        }else if(message.startsWith("\\pvMessage:")){
+        } else if (message.startsWith("\\pvMessage:")) {
             String pvMessageBeforeEncode = message.substring(message.indexOf(":") + 1);
             String usersActiveListString = new String(pvMessageBeforeEncode);
 
@@ -145,16 +153,21 @@ Commands :
             String messagePV = result[2];
 
             System.out.println(messagePV);
-            beforeSendPVMessage(messagePV,targetUserName,nameSender);
+            beforeSendPVMessage(messagePV, targetUserName, nameSender);
             return true;
-    }else if(message.startsWith("\\startSendingTCPfile")){
-            startReceivingFileViaTCP();
+        } else if (message.startsWith("\\startSendingTCPfile:")) {
+            String userSenderName = message.substring(message.indexOf(":") + 1);
+
+            startReceivingFileViaTCP(userSenderName);
+            return true;
+        } else if (message.startsWith("\\startSendingFileToClientTCP")) {
+            sendFileToClient();
             return true;
         }
         return false;
     }
 
-    private void startReceivingFileViaTCP() {
+    private void startReceivingFileViaTCP(String userSenderName) {
         ServerSocket serverSocket = null;
         Socket socket = null;
         InputStream inputStream = null;
@@ -164,30 +177,31 @@ Commands :
 
         try {
             serverSocket = new ServerSocket(2137);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         try {
             socket = serverSocket.accept();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         try {
             inputStream = socket.getInputStream();
             inputStreamReader = new InputStreamReader((socket.getInputStream()));
             bufferedReader = new BufferedReader(inputStreamReader);
-            outputStream = new FileOutputStream("filesOnServer\\" + bufferedReader.readLine());
-
-        }catch (Exception e){
+            String fileName = bufferedReader.readLine();
+            outputStream = new FileOutputStream("filesOnServer\\" + fileName);
+            createHyperlink(fileName, userSenderName);
+        } catch (Exception e) {
             e.printStackTrace();
-        }try {
-            byte[] bytes = new byte[20*1024*1024];
+        }
+        try {
+            byte[] bytes = new byte[20 * 1024 * 1024];
             int count;
-            while ((count =  inputStream.read(bytes))>0){
-                outputStream.write(bytes,0,count);
-
+            while ((count = inputStream.read(bytes)) > 0) {
+                outputStream.write(bytes, 0, count);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         try {
@@ -200,19 +214,69 @@ Commands :
         }
     }
 
+    private void createHyperlink(String fileName, String userSenderName) {
+        broadcast("\\newFileOnServer:" + fileName + "|" + userSenderName);
+    }
+
     private void userDisconectFromServer(String name) {
         sendActiveUserList(name);
     }
 
-    private void sendActiveUsersList(){
-        // Wysyłanie listy aktywnych użytkowników
-        //  usersList += "\\e";
+    private void sendActiveUsersList() {
         sendActiveUserList(null);
     }
 
-    private static void close(){
+    private static void close() {
         running = false;
         datagramSocket.close();
     }
 
+    private void sendFileToClient() {
+
+        ServerSocket serverSocket = null;
+        Socket socket = null;
+        String fileName = null;
+
+        InputStreamReader inputStreamReader = null;
+        BufferedReader bufferedReader = null;
+
+        try {
+            serverSocket = new ServerSocket(2137);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            socket = serverSocket.accept();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            inputStreamReader = new InputStreamReader(socket.getInputStream());
+            bufferedReader = new BufferedReader(inputStreamReader);
+            fileName = bufferedReader.readLine();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        try {
+
+            byte[] bytes = new byte[20*1024*1024];
+            InputStream inputStream = new FileInputStream("filesOnServer\\" + fileName);
+            OutputStream outputStream = socket.getOutputStream();
+
+            int i;
+            while ((i = inputStream.read(bytes)) > 0){
+                outputStream.write(bytes,0,i);
+            }
+            outputStream.close();
+            inputStream.close();
+            socket.close();
+            serverSocket.close();
+            bufferedReader.close();
+            inputStreamReader.close();
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 }

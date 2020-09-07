@@ -7,6 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
@@ -36,8 +37,8 @@ public class ClientGUI extends Application {
         launch(args);
     }
 
-    public void printMessage (String message,String command){
-        setTextInTextFlow(message + "\n",command);
+    public void printMessage (String message,String command,Hyperlink hyperlink){
+        setTextInTextFlow(message + "\n",command,hyperlink);
     }
 
     public  void createClient(String userName, String ipAdress, int port, Stage stage){
@@ -74,7 +75,7 @@ public class ClientGUI extends Application {
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()){
             clientServer.send("\\pvMessage:" + targetUserName + "|" + name + "|" + result.get());
-            printMessage("Wiadomość prywatna "+ result.get() +" od ciebie do " + targetUserName,"pvSEND");
+            printMessage("Wiadomość prywatna "+ result.get() +" od ciebie do " + targetUserName,"pvSEND",null);
         }
     }
 
@@ -82,7 +83,7 @@ public class ClientGUI extends Application {
     public void start(Stage primaryStage) {
     }
 
-    private void setTextInTextFlow(String message,String command){
+    private void setTextInTextFlow(String message, String command, Hyperlink hyperlink){
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -104,6 +105,10 @@ public class ClientGUI extends Application {
                     Text text = new Text(message);
                     text.setFill(Color.RED);
                     chat_text.getChildren().addAll(text);
+                }else if(command.equals("hyperlink")){
+                    Text text = new Text(message);
+                    text.setFill(Color.GRAY);
+                    chat_text.getChildren().addAll(text,hyperlink);
                 }
 
             }
@@ -133,8 +138,8 @@ public class ClientGUI extends Application {
     public void sendFileButton(ActionEvent actionEvent) throws IOException {
 
         FileChooser fileChooser = new FileChooser();
-        clientServer.send("\\startSendingTCPfile");
-        Socket sock = new Socket("127.0.0.1", 2137);
+        clientServer.send("\\startSendingTCPfile:" + name);
+        Socket sock = new Socket(clientServer.address, 2137);
         File file = fileChooser.showOpenDialog(null);
 
         PrintWriter printWriter = new PrintWriter(sock.getOutputStream());
@@ -154,4 +159,5 @@ public class ClientGUI extends Application {
         sock.close();
 
     }
+
 }
