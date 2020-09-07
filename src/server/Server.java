@@ -1,5 +1,6 @@
 package server;
 
+import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 public class Server {
@@ -119,12 +120,11 @@ Commands :
         if(message.startsWith("\\con:")){
             String name = message.substring(message.indexOf(":") + 1);
             clients.add(new ClientInfo(name,datagramPacket.getAddress(),datagramPacket.getPort()));
-            broadcast("User " + name + " Connected");
+            broadcast("\\con:User " + name + " Connected");
             return true;
         }else if(message.startsWith("\\stopServer")){
             close();
             return true;  //TODO zmienić sposób wyłączenia serwera.
-
         }else if(message.startsWith("\\isAvailable")){
             send("true",datagramPacket.getAddress(),datagramPacket.getPort());
             return true;
@@ -147,8 +147,57 @@ Commands :
             System.out.println(messagePV);
             beforeSendPVMessage(messagePV,targetUserName,nameSender);
             return true;
-    }
+    }else if(message.startsWith("\\startSendingTCPfile")){
+            startReceivingFileViaTCP();
+            return true;
+        }
         return false;
+    }
+
+    private void startReceivingFileViaTCP() {
+        ServerSocket serverSocket = null;
+        Socket socket = null;
+        InputStream inputStream = null;
+        OutputStream outputStream = null;
+        InputStreamReader inputStreamReader = null;
+        BufferedReader bufferedReader = null;
+
+        try {
+            serverSocket = new ServerSocket(2137);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        try {
+            socket = serverSocket.accept();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        try {
+            inputStream = socket.getInputStream();
+            inputStreamReader = new InputStreamReader((socket.getInputStream()));
+            bufferedReader = new BufferedReader(inputStreamReader);
+            outputStream = new FileOutputStream("filesOnServer\\" + bufferedReader.readLine());
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }try {
+            byte[] bytes = new byte[20*1024*1024];
+            int count;
+            while ((count =  inputStream.read(bytes))>0){
+                outputStream.write(bytes,0,count);
+
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        try {
+            outputStream.close();
+            inputStream.close();
+            socket.close();
+            serverSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void userDisconectFromServer(String name) {

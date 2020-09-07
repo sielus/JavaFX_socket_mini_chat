@@ -60,7 +60,7 @@ public class ClientServer {
                         if(!isCommand(messageFromClient,datagramPacket)){
                             //Print message
                             if(!messageFromClient.isEmpty()){
-                                clientGUI.printMessage(messageFromClient);
+                                clientGUI.printMessage(messageFromClient,"normal");
                             }
                         }
                     }
@@ -73,6 +73,8 @@ public class ClientServer {
 
     private boolean isCommand(String message, DatagramPacket datagramPacket) {
         if(message.startsWith("\\con:")){
+            String newUserConnected = message.substring(message.indexOf(":") + 1);
+            clientGUI.printMessage(newUserConnected,"serverCOMMAND");
             return true;
         }else if(message.startsWith("\\userList")) {
             refreshUserActiveList(message);
@@ -91,7 +93,7 @@ public class ClientServer {
         String targetUserName = result[0];
         String nameSender = result[1];
         String messagePV = result[2];
-        clientGUI.printMessage("Wiadomośc prywatna od " + nameSender + " do ciebie : " + messagePV);
+        clientGUI.printMessage("Wiadomośc prywatna od " + nameSender + " do ciebie : " + messagePV,"pvRECIEVE");
     }
 
     private static void refreshUserActiveList(String message) {
