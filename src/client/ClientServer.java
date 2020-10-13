@@ -1,7 +1,10 @@
 package client;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Hyperlink;
 
 import javax.swing.*;
@@ -79,6 +82,7 @@ public class ClientServer {
     }
 
     private boolean isCommand(String message, DatagramPacket datagramPacket) {
+        DialogsManager dialogsManager = new DialogsManager();
         if(message.startsWith("\\con:")){
             String newUserConnected = message.substring(message.indexOf(":") + 1);
             clientGUI.printMessage(newUserConnected,"serverCOMMAND",null);
@@ -89,6 +93,15 @@ public class ClientServer {
         }else if(message.startsWith("\\pvMessage:")) {
             startNewPWwindow(message);
         return true;
+        }else if(message.startsWith("\\disconnect")) {
+            disconnectFromServer();
+            return true;
+        }else if(message.startsWith("\\kick")) {
+            dialogsManager.showKickedAlert();
+            return true;
+        }else if(message.startsWith("\\ban")) {
+            dialogsManager.showBannedAlert();
+            return true;
         }else if(message.startsWith("\\newFileOnServer")) {
             String fileName = message.substring(message.indexOf(":") + 1,message.indexOf("|"));
            // fileName = (fileName.replace("\\userList",""));
@@ -98,6 +111,11 @@ public class ClientServer {
             return true;
         }
         return false;
+    }
+
+    static void disconnectFromServer() {
+        Platform.exit();
+        System.exit(0);
     }
 
     private void generateHyperlink(String fileName,String senderName) {

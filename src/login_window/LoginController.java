@@ -8,8 +8,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
+import sql_manager.SQLManager;
+
 import java.io.*;
 import java.net.*;
+import java.sql.SQLException;
 
 public class LoginController {
 
@@ -35,7 +38,16 @@ public class LoginController {
     }
 
     private boolean checkUserPassAndLogin(String userName, String passwd) {
+
+        SQLManager sqlManager = new SQLManager();
+        sqlManager.connect();
+        try {
+            sqlManager.getAllData();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
         return true; //TODO mechanizm logownia do bazy
+
     }
 
     private boolean serverIsAvailable(String serverIP, int port) {

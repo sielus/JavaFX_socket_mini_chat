@@ -3,6 +3,7 @@
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -38,5 +39,6 @@
           </yAxis>
 
       </LineChart>
+      <ListView fx:id="fx_list_users" layoutX="30.0" layoutY="144.0" prefHeight="246.0" prefWidth="200.0" />
    </children>
 </AnchorPane>

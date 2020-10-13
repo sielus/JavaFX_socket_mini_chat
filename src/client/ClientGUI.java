@@ -16,14 +16,8 @@ import javafx.scene.text.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-
-import javax.imageio.ImageIO;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.image.BufferedImage;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -67,21 +61,15 @@ public class ClientGUI extends Application {
             }
         });
 
-
-
-
-
         clientServer = new ClientServer(userName,ipAdress,serverPortUDP);
         activeUserList = (ListView<String>) parent.lookup("#group_chat_list_users");
-
-
 
         activeUserList.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-              String targetUserName = activeUserList.getSelectionModel().getSelectedItem();
-              openInputDialog(targetUserName);
-                  }
+                String targetUserName = activeUserList.getSelectionModel().getSelectedItem();
+                openInputDialog(targetUserName);
+            }
         });
 
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -90,11 +78,7 @@ public class ClientGUI extends Application {
                 clientServer.sendOnDisconectRequest();
             }
         });
-
-
     }
-
-
 
     private void openInputDialog(String targetUserName) {
         TextInputDialog dialog = new TextInputDialog("");
@@ -107,8 +91,6 @@ public class ClientGUI extends Application {
             printMessage("Wiadomość prywatna "+ result.get() +" od ciebie do " + targetUserName,"pvSEND",null);
         }
     }
-
-
 
     @Override
     public void start(Stage primaryStage) {
@@ -191,7 +173,6 @@ public class ClientGUI extends Application {
             sock.close();
         }
     }
-
 
     public void displayTray() throws AWTException {
         SystemTray tray = SystemTray.getSystemTray();

@@ -1,13 +1,8 @@
 package server;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.control.Hyperlink;
-
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
-import java.util.Timer;
 
 public class Server {
     private static DatagramSocket datagramSocket;
@@ -38,19 +33,18 @@ public class Server {
             DatagramPacket datagramPacket = new DatagramPacket(data, data.length, address, port);
             datagramSocket.send(datagramPacket);
             ChatServerGUI.printLogServer("Send message to " + address + port);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static void broadcast(String messageFromClient) {
+    public static void broadcast(String messageFromClient) {
         for (ClientInfo info : clients) {
             send(messageFromClient, info.getAddress(), info.getPort());
         }
     }
 
-    private void sendActiveUserList(String userNametoExit) {
+    public void sendActiveUserList(String userNametoExit) {
         if (userNametoExit != null) {
             int index = 0;
             for (ClientInfo info : clients) {
@@ -103,8 +97,6 @@ public class Server {
                         DatagramPacket datagramPacket = new DatagramPacket(data, data.length);
                         datagramSocket.receive(datagramPacket);
                         String messageFromClient = new String(data);
-
-
                         messageFromClient = messageFromClient.substring(0, messageFromClient.indexOf("\\e")); //end line tag
                         //broadcast(messageFromClient);
                         //  System.out.println(messageFromClient + " wiadomosc od klienta ");
@@ -133,6 +125,17 @@ public class Server {
     // \isAvailable-> check if server is available
 
      */
+
+    void sendCommendToUser(String userTarget, String commend){
+        for (ClientInfo info : clients) {
+            if (userTarget.equalsIgnoreCase(info.getName())) {
+                InetAddress targetAddress = info.getAddress();
+                int targetPort = info.getPort();
+                send(commend, targetAddress, targetPort);
+                break;
+            }
+        }
+    }
     private boolean isCommand(String message, DatagramPacket datagramPacket) {
         if (message.startsWith("\\con:")) {
             String name = message.substring(message.indexOf(":") + 1);
@@ -141,7 +144,7 @@ public class Server {
             return true;
         } else if (message.startsWith("\\stopServer")) {
             close();
-            return true;  //TODO zmienić sposób wyłączenia serwera.
+            return true;
         } else if (message.startsWith("\\isAvailable")) {
             send("true", datagramPacket.getAddress(), datagramPacket.getPort());
             return true;
@@ -304,5 +307,18 @@ public class Server {
             ChatServerGUI.printLogServer(e.getMessage());
             e.printStackTrace();
         }
+    }
+    public ArrayList<String> getAllusersName(){
+        ArrayList<String> logins = new ArrayList();
+        logins.clear();
+        for (ClientInfo info : clients) {
+            logins.add(info.getName());
+        }
+
+        return logins;
+    }
+
+    public void clearUsersList(){
+        clients.clear();
     }
 }
