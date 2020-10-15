@@ -1,13 +1,16 @@
-module com {
+module org {
     requires javafx.controls;
     requires javafx.fxml;
-    requires java.sql;
     requires java.desktop;
+    requires java.sql;
+    requires java.persistence;
+    requires net.bytebuddy;
 
+    opens org to javafx.fxml;
+    exports org.client;
+    exports org.login_window;
+    exports org.server;
+    exports org.sql_manager;
 
-    opens com to javafx.fxml;
-    exports com.server;
-    exports com.login_window;
-    exports com.client;
 
 }
