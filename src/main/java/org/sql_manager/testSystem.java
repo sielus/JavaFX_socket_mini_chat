@@ -3,17 +3,15 @@ package org.sql_manager;
 import javax.persistence.*;
 import java.util.List;
 
+
 public class testSystem {
     private static final EntityManagerFactory entityManagerFactory = Persistence
             .createEntityManagerFactory("JavaFX_socket_mini_chat");
     public static void main(String[] args){
 
-        addUser("hibernate","xdd");
+        addUser("hibernate","test");
         getAllUsers();
         entityManagerFactory.close();
-
-
-
     }
 
     public static void addUser(String login, String passwd){

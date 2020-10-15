@@ -1,7 +1,13 @@
 package org.sql_manager;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.io.Serializable;
+
+
+@Entity
+@Table(name = "TEST")
 
 public class user implements Serializable {
     private static final long serialVersionUID = 1L;
