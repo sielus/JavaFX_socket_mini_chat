@@ -1,6 +1,5 @@
 package org.server;
 
-import org.sql_manager.SQLManager;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -39,6 +38,7 @@ public class ChatServerGUI extends Application {
     public static Parent parent;
     private static int eventsCount;
     private static int seconds;
+    @FXML
     private static LineChart <Number,Number>lineChart;
     private static XYChart.Series<Number,Number> series;
     static boolean runChart = false;
@@ -122,8 +122,6 @@ public class ChatServerGUI extends Application {
     }
 
     public void startServer(ActionEvent actionEvent) {
-        SQLManager sqlManager = new SQLManager();
-        sqlManager.connect();
         server = new Server();
         String portUDP = getServerPortUDP();
         String portTCP = getServerPortTCP();

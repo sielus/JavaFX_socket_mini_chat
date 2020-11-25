@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org</groupId>
-    <artifactId>JavaFX_socket_mini_chat</artifactId>
+    <groupId>org.example</groupId>
+    <artifactId>test</artifactId>
     <version>1.0-SNAPSHOT</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -10,17 +10,11 @@
         <maven.compiler.target>11</maven.compiler.target>
     </properties>
     <dependencies>
-
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>14</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
-
-
-
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-base</artifactId>
@@ -38,36 +32,6 @@
             <artifactId>javafx-fxml</artifactId>
             <version>14</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-core -->
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>5.4.22.Final</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.2.17</version>
-        </dependency>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>3.8.1</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.fasterxml/classmate -->
-        <dependency>
-            <groupId>com.fasterxml</groupId>
-            <artifactId>classmate</artifactId>
-            <version>1.5.0</version>
-        </dependency>
-
-
-
     </dependencies>
     <build>
         <plugins>
@@ -79,11 +43,10 @@
                     <release>11</release>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.3</version>
+                <version>0.0.4</version>
                 <configuration>
                     <mainClass>org.server.ChatServerGUI</mainClass>
                     <launcher>launcher.sh</launcher>

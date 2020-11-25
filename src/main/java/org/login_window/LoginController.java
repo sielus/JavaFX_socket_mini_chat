@@ -1,6 +1,6 @@
 package org.login_window;
 
-import org.client.ClientGUI;
+import org.login_window.client.ClientGUI;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -8,11 +8,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
-import org.sql_manager.SQLManager;
 
 import java.io.*;
 import java.net.*;
-import java.sql.SQLException;
 
 public class LoginController {
 

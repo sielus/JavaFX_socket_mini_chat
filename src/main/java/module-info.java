@@ -1,16 +1,15 @@
 module org {
-    requires javafx.controls;
-    requires javafx.fxml;
     requires java.desktop;
     requires java.sql;
-    requires java.persistence;
-    requires net.bytebuddy;
+    requires javafx.graphics;
+    requires javafx.fxml;
+    requires javafx.controls;
+
 
     opens org to javafx.fxml;
-    exports org.client;
+    exports org.login_window.client;
     exports org.login_window;
     exports org.server;
-    exports org.sql_manager;
 
 
 }

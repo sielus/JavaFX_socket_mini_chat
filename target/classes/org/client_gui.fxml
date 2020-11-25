@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.TextFlow?>
 
-<AnchorPane prefHeight="258.0" prefWidth="742.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.client.ClientGUI">
+<AnchorPane prefHeight="258.0" prefWidth="742.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.login_window.client.ClientGUI">
    <ScrollPane fx:id="sp" layoutX="178.0" layoutY="14.0" prefHeight="185.0" prefViewportHeight="148.0" prefViewportWidth="139.0" prefWidth="550.0" AnchorPane.bottomAnchor="63.0" AnchorPane.leftAnchor="178.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
    <TextFlow fx:id="chat_text" layoutX="278.0" layoutY="10.0" prefHeight="180.0" prefWidth="529.0" AnchorPane.bottomAnchor="55.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="10.0">
    </TextFlow>
