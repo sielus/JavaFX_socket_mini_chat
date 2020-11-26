@@ -64,8 +64,6 @@ public class LoginController {
         }
     }
 
-
-
     private boolean serverIsAvailable(String serverIP, int port) {
         try {
             String checkServer = "\\isAvailable\\e";

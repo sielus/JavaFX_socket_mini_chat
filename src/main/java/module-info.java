@@ -10,6 +10,7 @@ module org {
     exports org.login_window.client;
     exports org.login_window;
     exports org.server;
+    exports org.login_window.settings;
 
 
 }
