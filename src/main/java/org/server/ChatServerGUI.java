@@ -58,6 +58,7 @@ public class ChatServerGUI extends Application {
     @FXML
     static ListView<String> activeUserList;
 
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -124,10 +125,6 @@ public class ChatServerGUI extends Application {
     }
 
     public void startServer(ActionEvent actionEvent) throws SQLException {
-        SQLHelper sqlHelper = new SQLHelper();
-        System.out.println(sqlHelper.connect());
-        sqlHelper.connect();
-
         server = new Server();
         String portUDP = getServerPortUDP();
         String portTCP = getServerPortTCP();

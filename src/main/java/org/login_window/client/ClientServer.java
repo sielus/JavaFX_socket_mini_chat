@@ -48,7 +48,7 @@ public class ClientServer {
             byte[] data = message.getBytes();
             DatagramPacket datagramPacket = new DatagramPacket(data,data.length,address,port);
             socket.send(datagramPacket);
-            System.out.println(message);
+            //System.out.println(message);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -63,7 +63,7 @@ public class ClientServer {
                         DatagramPacket datagramPacket = new DatagramPacket(data,data.length);
                         socket.receive(datagramPacket);
                         String messageFromClient = new String(data);
-                        System.out.println(messageFromClient);
+                       // System.out.println(messageFromClient);
                         messageFromClient = messageFromClient.substring(0,messageFromClient.indexOf("\\e")); //end line tag
                         if(!isCommand(messageFromClient,datagramPacket)){
                             //Print message
@@ -145,7 +145,7 @@ public class ClientServer {
             int userSelection = fileChooser.showSaveDialog(parentFrame);
             if (userSelection == JFileChooser.APPROVE_OPTION) {
                 String path = fileChooser.getSelectedFile().getAbsolutePath();
-                System.out.println(path);
+                //System.out.println(path);
                 outputStream = new FileOutputStream(path);
                 byte[] bytes = new byte[20 * 1024 * 1024];
                 int count;

@@ -1,8 +1,11 @@
 package org.server;
 
+import org.server.SQL.SQLHelper;
+
 import java.io.*;
 import java.net.*;
 import java.security.KeyPair;
+import java.sql.Connection;
 import java.util.ArrayList;
 
 public class Server {
@@ -13,6 +16,11 @@ public class Server {
     private static ArrayList<ClientInfo> clients = new ArrayList<ClientInfo>(); //Clients list
     static String usersList = "\\userActive";
     public Thread thread;
+    private SQLHelper sqlHelper;
+
+    public Server() {
+        this.sqlHelper = new SQLHelper(); //connection with sql in constructor
+    }
 
     public void start(int port) {
         try {
@@ -104,7 +112,6 @@ public class Server {
                         if (!isCommand(messageFromClient, datagramPacket)) {
                             broadcast(messageFromClient);
                         }
-
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -133,7 +140,6 @@ public class Server {
                 InetAddress targetAddress = info.getAddress();
                 int targetPort = info.getPort();
                 send(commend, targetAddress, targetPort);
-                break;
             }
         }
     }
@@ -249,6 +255,7 @@ public class Server {
     }
 
     public void close() {
+        sqlHelper.closeConnect();
         running = false;
         datagramSocket.close();
     }
@@ -338,18 +345,26 @@ public class Server {
 
         String login = userData.substring(0, userData.indexOf(":"));
         String passwd = userData.substring(userData.indexOf(":") + 1);
-
-        if(login.equals("test")){
+        //sqlHelper.addUser(login,passwd);
+        if(sqlHelper.checkUserPasswd(login,passwd)){
             PrintWriter printWriter = new PrintWriter(socket.getOutputStream());
             printWriter.println("true");
             printWriter.flush();
+            closeTcpSockets(serverSocket,socket);
         }else {
             PrintWriter printWriter = new PrintWriter(socket.getOutputStream());
             printWriter.println("false");
             printWriter.flush();
+            closeTcpSockets(serverSocket,socket);
         }
-
     }
 
-
+    private void closeTcpSockets(ServerSocket serverSocket, Socket socket) {
+        try {
+            serverSocket.close();
+            socket.close();
+        }catch (Exception e){
+            e.getCause();
+        }
+    }
 }

@@ -33,9 +33,6 @@ public class ClientGUI extends Application {
     @FXML static ListView<String> activeUserList;
     public ScrollPane sp;
 
-    public static void main(String[] args) {
-        launch(args);
-    }
 
     public void printMessage (String message,String command,Hyperlink hyperlink){
         setTextInTextFlow(message + "\n",command,hyperlink);
@@ -54,7 +51,7 @@ public class ClientGUI extends Application {
 
         stage.focusedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean lostFocus, Boolean gainFocus) -> {
             if (gainFocus) {
-                System.out.println("dsadsadsadsadsadsa"); //TODO powiadomienia gdy brak focusu o nowych wiadomosciach
+                System.out.println("Window maximised"); //TODO powiadomienia gdy brak focusu o nowych wiadomosciach
             }else {
 
             }
@@ -150,7 +147,7 @@ public class ClientGUI extends Application {
 
         File file = fileChooser.showOpenDialog(null);
         if(file!=null){
-            clientServer.send("\\startSendingTCPfile:" + name);
+            clientServer.send("\\startSe1ndingTCPfile:" + name);
             Socket sock = new Socket(clientServer.address, tcpPort);
             PrintWriter printWriter = new PrintWriter(sock.getOutputStream());
             printWriter.println(file.getName());
