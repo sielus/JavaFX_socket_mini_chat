@@ -2,6 +2,7 @@ package org.server;
 
 import java.io.*;
 import java.net.*;
+import java.security.KeyPair;
 import java.util.ArrayList;
 
 public class Server {
@@ -136,7 +137,7 @@ public class Server {
             }
         }
     }
-    private boolean isCommand(String message, DatagramPacket datagramPacket) {
+    private boolean isCommand(String message, DatagramPacket datagramPacket) throws Exception {
         if (message.startsWith("\\con:")) {
             String name = message.substring(message.indexOf(":") + 1);
             clients.add(new ClientInfo(name, datagramPacket.getAddress(), datagramPacket.getPort()));
@@ -144,6 +145,9 @@ public class Server {
             return true;
         } else if (message.startsWith("\\stopServer")) {
             close();
+            return true;
+        }  else if (message.startsWith("\\startLoginUser")) {
+            startReceivingTCPLoginPack();
             return true;
         } else if (message.startsWith("\\isAvailable")) {
             send("true", datagramPacket.getAddress(), datagramPacket.getPort());
@@ -169,7 +173,6 @@ public class Server {
             return true;
         } else if (message.startsWith("\\startSendingTCPfile:")) {
             String userSenderName = message.substring(message.indexOf(":") + 1);
-
             startReceivingFileViaTCP(userSenderName);
             return true;
         } else if (message.startsWith("\\startSendingFileToClientTCP")) {
@@ -187,8 +190,6 @@ public class Server {
         InputStreamReader inputStreamReader = null;
         BufferedReader bufferedReader = null;
         ChatServerGUI.printLogServer("Receiving File via TCP | start from " + userSenderName);
-
-
         try {
             serverSocket = new ServerSocket(portTCP);
         } catch (Exception e) {
@@ -226,7 +227,6 @@ public class Server {
         }
         try {
             ChatServerGUI.printLogServer("Receiving File via TCP | closing sockets");
-
             outputStream.close();
             inputStream.close();
             socket.close();
@@ -321,4 +321,35 @@ public class Server {
     public void clearUsersList(){
         clients.clear();
     }
+
+    private void startReceivingTCPLoginPack() throws Exception {
+        ServerSocket serverSocket = new ServerSocket(portTCP);
+        Socket socket = serverSocket.accept();
+        Security security = new Security(socket);
+        KeyPair generateKeyPair = security.generateKeyPair();
+
+        byte[] publicKey = generateKeyPair.getPublic().getEncoded();
+        byte[] privateKey = generateKeyPair.getPrivate().getEncoded();
+
+        security.sendPublicKeyToClient(publicKey);
+
+        byte[] encryptedData = security.getEncryptedDataFromUser();
+        String userData = new String(security.decrypt(privateKey, encryptedData));
+
+        String login = userData.substring(0, userData.indexOf(":"));
+        String passwd = userData.substring(userData.indexOf(":") + 1);
+
+        if(login.equals("test")){
+            PrintWriter printWriter = new PrintWriter(socket.getOutputStream());
+            printWriter.println("true");
+            printWriter.flush();
+        }else {
+            PrintWriter printWriter = new PrintWriter(socket.getOutputStream());
+            printWriter.println("false");
+            printWriter.flush();
+        }
+
+    }
+
+
 }

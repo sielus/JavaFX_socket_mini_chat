@@ -18,11 +18,13 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.server.SQL.SQLHelper;
 
 import java.io.File;
 import java.io.IOException;
 
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -121,7 +123,11 @@ public class ChatServerGUI extends Application {
         server.sendActiveUserList(userToKick);
     }
 
-    public void startServer(ActionEvent actionEvent) {
+    public void startServer(ActionEvent actionEvent) throws SQLException {
+        SQLHelper sqlHelper = new SQLHelper();
+        System.out.println(sqlHelper.connect());
+        sqlHelper.connect();
+
         server = new Server();
         String portUDP = getServerPortUDP();
         String portTCP = getServerPortTCP();

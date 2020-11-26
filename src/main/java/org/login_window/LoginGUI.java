@@ -1,6 +1,5 @@
 package org.login_window;
 
-
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -8,7 +7,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-
 import java.io.File;
 import java.net.URL;
 
@@ -57,9 +55,7 @@ public class LoginGUI extends Application {
         launch(args);
     }
 
-
-
-    public void logIntoServer(ActionEvent actionEvent) { //Button from login sreen
+    public void logIntoServer(ActionEvent actionEvent) throws Exception { //Button from login sreen
         //ClientGUI clientGUI = new ClientGUI(text_input_user_name.getText(),text_input_server_ip.getText(),Integer.parseInt(text_input_server_port.getText()));
         loginController = new LoginController();
         loginController.onLogInButton(getUserName(),getUserPasswd(),getServerIP(),getPortUDP(),getPortTCP(),actionEvent);

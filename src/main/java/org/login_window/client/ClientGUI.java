@@ -52,7 +52,6 @@ public class ClientGUI extends Application {
         stage.setTitle("Chat Sielus 'Let's Talk! :3 | Użytkownik " + userName);
         stage.setResizable(false);
 
-
         stage.focusedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean lostFocus, Boolean gainFocus) -> {
             if (gainFocus) {
                 System.out.println("dsadsadsadsadsadsa"); //TODO powiadomienia gdy brak focusu o nowych wiadomosciach
@@ -101,7 +100,6 @@ public class ClientGUI extends Application {
             @Override
             public void run() {
                 TextFlow chat_text = new TextFlow();
-
                 chat_text =  (TextFlow) parent.lookup("#chat_text");
                 if(command.equals("normal")){
                     Text text = new Text(message);
@@ -123,10 +121,8 @@ public class ClientGUI extends Application {
                     text.setFill(Color.GRAY);
                     chat_text.getChildren().addAll(text,hyperlink);
                 }
-
             }
         });
-
     }
 
     public void sendMessageButton(ActionEvent actionEvent) {

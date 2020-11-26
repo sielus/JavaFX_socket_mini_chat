@@ -10,11 +10,13 @@
         <maven.compiler.target>11</maven.compiler.target>
     </properties>
     <dependencies>
+
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>14</version>
         </dependency>
+
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-base</artifactId>
@@ -32,6 +34,13 @@
             <artifactId>javafx-fxml</artifactId>
             <version>14</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.18</version>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>
