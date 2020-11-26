@@ -15,51 +15,28 @@ import java.io.*;
 import java.net.URL;
 
 public class LoginGUI extends Application {
-
-    public TextField text_input_server_port_tcp;
+    public TextField text_input_user_passwd;
 
     public String getUserPasswd() {
         return text_input_user_passwd.getText();
-    }
-
-    public TextField text_input_user_passwd;
-
-
-    public int getPortUDP() {
-        return Integer.parseInt(text_input_server_port_udp.getText());
-    }
-
-    public int getPortTCP() {
-        return Integer.parseInt(text_input_server_port_tcp.getText());
     }
 
     public String getUserName() {
         return text_input_user_name.getText();
     }
 
-    public String getServerIP() {
-        return text_input_server_ip.getText();
-    }
-
-    public TextField text_input_server_port_udp;
     public TextField text_input_user_name;
-    public TextField text_input_server_ip;
     LoginController loginController;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         URL url = new File("src/main/resources/org/login_gui.fxml").toURI().toURL();
         Parent root = FXMLLoader.load(url);
-
         primaryStage.setTitle("LogIn to sielus chat");
         primaryStage.setScene(new Scene(root, 707, 374));
         primaryStage.show();
         primaryStage.setResizable(true);
-
-
     }
-
-
 
     public static void main(String[] args) {
         launch(args);

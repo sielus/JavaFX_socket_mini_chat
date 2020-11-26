@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.login_window.client.DialogsManager;
 import java.io.*;
 import java.net.URL;
 
@@ -19,8 +20,8 @@ public class SettingsControllerGUI {
     @FXML
     public TextField text_port_udp;
 
-    private Parent root;
-    private Stage stage;
+    private static Parent root;
+    private static Stage stage;
 
     private String getTextServerIp() {
         return text_server_ip.getText();
@@ -34,17 +35,17 @@ public class SettingsControllerGUI {
         return text_port_udp.getText();
     }
 
-    public void setTextServerIp(String serverIp) {
+    private void setTextServerIp(String serverIp) {
         TextField textField = (TextField) root.lookup("#text_server_ip");
         textField.setText(serverIp);
     }
 
-    public void setTextServerTcp(String serverTcp) {
+    private void setTextServerTcp(String serverTcp) {
         TextField textField = (TextField) root.lookup("#text_port_tcp");
         textField.setText(serverTcp);
     }
 
-    public void setTextServerUdp(String serverUdp) {
+    private void setTextServerUdp(String serverUdp) {
         TextField textField = (TextField) root.lookup("#text_port_udp");
         textField.setText(serverUdp);
     }
@@ -72,17 +73,60 @@ public class SettingsControllerGUI {
 
     private void saveSettingsToFile(){
         Settings settings = new Settings();
-        settings.setIP(getTextServerIp());
-        settings.setTCP(getTextServerTcp());
-        settings.setUDP(getTextServerUdp());
-        try {
-            FileOutputStream fileOut = new FileOutputStream("settings.dat");
-            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-            objectOut.writeObject(settings);
-            objectOut.close();
-        }catch (Exception e){
-           e.getMessage();
+        boolean checking = true;
+        String ip = getTextServerIp();
+        String tcp = getTextServerTcp();
+        String udp = getTextServerUdp();
+        DialogsManager dialogsManager = new DialogsManager();
+
+        if(checkIp(ip)){
+            settings.setIP(getTextServerIp());
+        }else {
+            dialogsManager.showErrorAllert("Settings error","Wrong IP address","Bad address structure!");
+            checking = false;
         }
+
+        if(isNumber(tcp)){
+            settings.setTCP(tcp);
+        }else {
+            dialogsManager.showErrorAllert("Settings error","Wrong TCP port","Default is 4445");
+            checking = false;
+        }
+
+        if(isNumber(udp)){
+            settings.setUDP(udp);
+        }else {
+            checking = false;
+            dialogsManager.showErrorAllert("Settings error","Wrong UDP port","Default is 4444");
+        }
+
+        if (checking) {
+            try {
+                FileOutputStream fileOut = new FileOutputStream("settings.dat");
+                ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+                objectOut.writeObject(settings);
+                objectOut.close();
+                stage.close();
+            }catch (Exception e){
+                //e.getMessage();
+            }
+        }
+    }
+    public static boolean isNumber(String strNum) {
+        if (strNum == null) {
+            return false;
+        }
+        try {
+            double test = Integer.parseInt(strNum);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkIp(String ip) {
+        String PATTERN = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
+        return ip.matches(PATTERN);
     }
 
     private void loadSettingsFromFile() throws IOException {
@@ -98,7 +142,7 @@ public class SettingsControllerGUI {
                 setTextServerIp(loaded.getIP());
                 setTextServerTcp(String.valueOf(loaded.getTCP()));
                 setTextServerUdp(String.valueOf(loaded.getUDP()));
-            }catch (FileNotFoundException | ClassNotFoundException fileNotFoundException){
+            }catch (FileNotFoundException | ClassNotFoundException ignored){
             }
         }
     }

@@ -38,4 +38,12 @@ public class DialogsManager {
             }
         });
     }
+
+    public void showErrorAllert(String title, String header, String details){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(details);
+        alert.showAndWait();
+    }
 }
