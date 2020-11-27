@@ -5,9 +5,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.login_window.settings.Settings;
 import org.login_window.settings.SettingsControllerGUI;
 
@@ -15,7 +17,7 @@ import java.io.*;
 import java.net.URL;
 
 public class LoginGUI extends Application {
-    public TextField text_input_user_passwd;
+    public PasswordField text_input_user_passwd;
 
     public String getUserPasswd() {
         return text_input_user_passwd.getText();
@@ -27,15 +29,18 @@ public class LoginGUI extends Application {
 
     public TextField text_input_user_name;
     LoginController loginController;
+    private static Stage primaryStage;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         URL url = new File("src/main/resources/org/login_gui.fxml").toURI().toURL();
         Parent root = FXMLLoader.load(url);
         primaryStage.setTitle("LogIn to sielus chat");
-        primaryStage.setScene(new Scene(root, 707, 374));
+        primaryStage.setScene(new Scene(root, 800, 355));
+        primaryStage.initStyle(StageStyle.UNDECORATED);
         primaryStage.show();
-        primaryStage.setResizable(true);
+        LoginGUI.primaryStage = primaryStage;
+        primaryStage.setResizable(false);
     }
 
     public static void main(String[] args) {
@@ -68,6 +73,11 @@ public class LoginGUI extends Application {
     public void showSettings(MouseEvent mouseEvent) throws IOException {
         SettingsControllerGUI settingsControllerGUI = new SettingsControllerGUI();
         settingsControllerGUI.showStage();
+    }
+
+    public void exit(MouseEvent mouseEvent) {
+        LoginGUI.primaryStage.close();
+        System.exit(0);
     }
 }
 
