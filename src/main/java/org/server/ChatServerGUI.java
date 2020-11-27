@@ -64,8 +64,9 @@ public class ChatServerGUI extends Application {
     }
     @Override
     public void start(Stage primaryStage) throws IOException {
-        URL url = new File("src/main/resources/org/server_gui.fxml").toURI().toURL();
-        Parent root = FXMLLoader.load(url);
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/org/server_gui.fxml"));
+        Parent root = loader.load();
         primaryStage.setTitle("Server chat GUI manager");
         primaryStage.setScene(new Scene(root, 844, 430));
         eventsCount = 0;

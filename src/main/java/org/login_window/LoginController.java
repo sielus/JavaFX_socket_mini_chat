@@ -20,8 +20,9 @@ public class LoginController {
             if (checkUserPassAndLogin(userName, passwd, serverIP, tcpPort)) {
                 try {
                     Stage stage = new Stage();
-                    URL url = new File("src/main/resources/org/client_gui.fxml").toURI().toURL();
-                    Parent root1 = FXMLLoader.load(url);
+                    FXMLLoader loader = new FXMLLoader();
+                    loader.setLocation(getClass().getResource("/org/client_gui.fxml"));
+                    Parent root1 = loader.load();
                     stage.setScene(new Scene(root1));
                     ClientGUI clientGUI = new ClientGUI();
                     clientGUI.createClient(userName, serverIP, udpPort, tcpPort, stage);
