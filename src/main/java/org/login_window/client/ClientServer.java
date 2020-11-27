@@ -48,7 +48,7 @@ public class ClientServer {
             byte[] data = message.getBytes();
             DatagramPacket datagramPacket = new DatagramPacket(data,data.length,address,port);
             socket.send(datagramPacket);
-            //System.out.println(message);
+            System.out.println(message);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -68,7 +68,12 @@ public class ClientServer {
                         if(!isCommand(messageFromClient,datagramPacket)){
                             //Print message
                             if(!messageFromClient.isEmpty()){
-                                clientGUI.printMessage(messageFromClient,"normal",null);
+                                if(name.equals(messageFromClient.substring(0,messageFromClient.indexOf(":")).trim())){
+                                    //System.out.println(messageFromClient.substring(messageFromClient.indexOf(":") + 1).trim());
+                                    clientGUI.printMessage(messageFromClient.substring(messageFromClient.indexOf(":") + 1).trim(),"FromMe",null);
+                                }else {
+                                    clientGUI.printMessage(messageFromClient,"normal",null);
+                                }
                             }
                         }
                     }

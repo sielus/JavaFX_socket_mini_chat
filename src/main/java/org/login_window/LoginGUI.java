@@ -12,9 +12,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.login_window.settings.Settings;
 import org.login_window.settings.SettingsControllerGUI;
-
 import java.io.*;
-import java.net.URL;
 
 public class LoginGUI extends Application {
     public PasswordField text_input_user_passwd;

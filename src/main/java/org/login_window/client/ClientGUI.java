@@ -101,6 +101,9 @@ public class ClientGUI extends Application {
                 if(command.equals("normal")){
                     Text text = new Text(message);
                     chat_text.getChildren().addAll(text);
+                }else if(command.equals("FromMe")) {
+                    Text text = new Text(message);
+                    chat_text.getChildren().addAll(text);
                 }else if(command.equals("pvSEND")) {
                     Text text = new Text(message);
                     text.setFill(Color.BLUE);

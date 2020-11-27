@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.login_window.client.DialogsManager;
@@ -55,8 +56,10 @@ public class SettingsControllerGUI {
         URL url = new File("src/main/resources/org/settings_gui.fxml").toURI().toURL();
         root = FXMLLoader.load(url);
         stage.setScene(new Scene(root));
+        stage.getIcons().add(new Image(SettingsControllerGUI.class.getResourceAsStream("/icons/settings_50px.png")));
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setTitle("Settings");
+        stage.setResizable(false);
         loadSettingsFromFile();
         stage.showAndWait();
     }
