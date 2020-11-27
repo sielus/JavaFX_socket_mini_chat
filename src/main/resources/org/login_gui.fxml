@@ -14,18 +14,16 @@
    <AnchorPane prefHeight="363.0" prefWidth="367.0">
       <children>
          <ImageView fitHeight="366.0" fitWidth="597.0">
-            <image>
-               <Image url="@../../../../../../Desktop/imagxeproxy.jpg" />
-            </image>
+                 <Image url="@../imageproxy.jpg" />
          </ImageView>
          <AnchorPane layoutX="425.0" prefHeight="366.0" prefWidth="379.0" style="-fx-background-color: #112437;">
             <children>
-                <Button layoutX="181.0" layoutY="263.0" mnemonicParsing="false" onAction="#logIntoServer" prefHeight="36.0" prefWidth="123.0" stylesheets="@../../style/style.css" text="Log in" textOverrun="LEADING_WORD_ELLIPSIS">
+                <Button layoutX="181.0" layoutY="263.0" mnemonicParsing="false" onAction="#logIntoServer" prefHeight="36.0" prefWidth="123.0" stylesheets="@../style/style.css" text="Log in" textOverrun="LEADING_WORD_ELLIPSIS">
                   <font>
                      <Font name="Arial" size="15.0" />
                   </font>
                </Button>
-               <Label layoutX="75.0" layoutY="269.0" prefHeight="25.0" prefWidth="65.0" stylesheets="@../../style/style.css" text="Sign up" textFill="#6eb7e7">
+               <Label layoutX="75.0" layoutY="269.0" prefHeight="25.0" prefWidth="65.0" stylesheets="@../style/style.css" text="Sign up" textFill="#6eb7e7">
                   <font>
                      <Font size="16.0" />
                   </font>
@@ -36,7 +34,7 @@
                      <Image url="@../icons/settings_50px.png" />
                   </image>
                </ImageView>
-               <Label layoutX="60.0" layoutY="23.0" styleClass="text" stylesheets="@../../style/style.css" text="Sielus Team Chat" textFill="WHITE">
+               <Label layoutX="60.0" layoutY="23.0" styleClass="text" stylesheets="@../style/style.css" text="Sielus Team Chat" textFill="WHITE">
                   <font>
                      <Font size="32.0" />
                   </font>

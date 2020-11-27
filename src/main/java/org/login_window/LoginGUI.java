@@ -33,8 +33,10 @@ public class LoginGUI extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        URL url = new File("src/main/resources/org/login_gui.fxml").toURI().toURL();
-        Parent root = FXMLLoader.load(url);
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/org/login_gui.fxml"));
+        Parent root = loader.load();
+
         primaryStage.setTitle("LogIn to sielus chat");
         primaryStage.setScene(new Scene(root, 800, 355));
         primaryStage.initStyle(StageStyle.UNDECORATED);
