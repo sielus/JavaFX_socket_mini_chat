@@ -11,6 +11,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.text.*;
 import javafx.stage.FileChooser;
@@ -98,10 +101,10 @@ public class ClientGUI extends Application {
             public void run() {
                 TextFlow chat_text = new TextFlow();
                 chat_text =  (TextFlow) parent.lookup("#chat_text");
-                if(command.equals("normal")){
+                if(command.equals("normal")){ //Message from server (other users)
                     Text text = new Text(message);
                     chat_text.getChildren().addAll(text);
-                }else if(command.equals("FromMe")) {
+                }else if(command.equals("FromMe")) { // Message from user
                     Text text = new Text(message);
                     chat_text.getChildren().addAll(text);
                 }else if(command.equals("pvSEND")) {
@@ -150,7 +153,7 @@ public class ClientGUI extends Application {
 
         File file = fileChooser.showOpenDialog(null);
         if(file!=null){
-            clientServer.send("\\startSe1ndingTCPfile:" + name);
+            clientServer.send("\\startSendingTCPfile:" + name);
             Socket sock = new Socket(clientServer.address, tcpPort);
             PrintWriter printWriter = new PrintWriter(sock.getOutputStream());
             printWriter.println(file.getName());

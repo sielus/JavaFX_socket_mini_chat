@@ -63,13 +63,10 @@ public class ClientServer {
                         DatagramPacket datagramPacket = new DatagramPacket(data,data.length);
                         socket.receive(datagramPacket);
                         String messageFromClient = new String(data);
-                       // System.out.println(messageFromClient);
                         messageFromClient = messageFromClient.substring(0,messageFromClient.indexOf("\\e")); //end line tag
                         if(!isCommand(messageFromClient,datagramPacket)){
-                            //Print message
                             if(!messageFromClient.isEmpty()){
                                 if(name.equals(messageFromClient.substring(0,messageFromClient.indexOf(":")).trim())){
-                                    //System.out.println(messageFromClient.substring(messageFromClient.indexOf(":") + 1).trim());
                                     clientGUI.printMessage(messageFromClient.substring(messageFromClient.indexOf(":") + 1).trim(),"FromMe",null);
                                 }else {
                                     clientGUI.printMessage(messageFromClient,"normal",null);
@@ -109,7 +106,6 @@ public class ClientServer {
             String fileName = message.substring(message.indexOf(":") + 1,message.indexOf("|"));
            // fileName = (fileName.replace("\\userList",""));
             String senderName = message.substring(message.indexOf("|")+1);
-
             generateHyperlink(fileName,senderName);
             return true;
         }
