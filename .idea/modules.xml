@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/server-client communication javaFX.iml" filepath="$PROJECT_DIR$/server-client communication javaFX.iml" />
+      <module fileurl="file://$PROJECT_DIR$/JavaFX_socket_mini_chat.iml" filepath="$PROJECT_DIR$/JavaFX_socket_mini_chat.iml" />
     </modules>
   </component>
 </project>
