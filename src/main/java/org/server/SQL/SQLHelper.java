@@ -21,6 +21,9 @@ public class SQLHelper {
     private void connect() {
         if (this.connection == null) {
             this.connection = databaseCreator.connect();
+           addUser("siel", "123");
+           addUser("patry", "123");
+
         }
     }
 
@@ -30,9 +33,10 @@ public class SQLHelper {
             PreparedStatement pstmt = connection.prepareStatement(sql);
             pstmt.setString(1, login);
             pstmt.setString(2, passwd);
+            System.out.println(pstmt);
             ResultSet resultSet = pstmt.executeQuery();
             resultSet.next();
-            if(resultSet.getInt("rowcount") == 1){
+            if(resultSet.getInt("rowcount") > 1){
                 return true;
             }else {
                 return false;

@@ -53,8 +53,9 @@ public class SettingsControllerGUI {
 
     public void showStage() throws IOException {
         stage = new Stage();
-        URL url = new File("src/main/resources/org/settings_gui.fxml").toURI().toURL();
-        root = FXMLLoader.load(url);
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/org/settings_gui.fxml"));
+        root = loader.load();
         stage.setScene(new Scene(root));
         stage.getIcons().add(new Image(SettingsControllerGUI.class.getResourceAsStream("/icons/settings_50px.png")));
         stage.initModality(Modality.APPLICATION_MODAL);

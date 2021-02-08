@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="JavaFX_socket_mini_chat" target="11" />
+      <module name="JavaFX_socket_mini_chat" target="8" />
     </bytecodeTargetLevel>
   </component>
 </project>
